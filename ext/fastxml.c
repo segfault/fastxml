@@ -24,6 +24,7 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE data);
 static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath);
 static void fastxml_data_mark( fxml_data_t *data );
 static void fastxml_data_free( fxml_data_t *data );
+static VALUE fastxml_doc_to_s(VALUE self);
 
 void Init_fastxml()
 {
@@ -33,6 +34,7 @@ void Init_fastxml()
     rb_include_module( rb_cFastXmlDoc, rb_mEnumerable );
     rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, 1 );
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
+    rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
     
 }
 
@@ -75,6 +77,24 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
     printf("done");
 
     return ret;
+}
+
+static VALUE fastxml_doc_to_s(VALUE self)
+{
+    VALUE ret, dv;
+    xmlChar *xs;
+    fxml_data_t *data;
+    int xs_len;
+
+    dv = rb_iv_get( self, "@lxml_doc" );
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+    xmlDocDumpFormatMemory( data->doc, &xs, &xs_len, 0 );
+
+    ret = rb_str_new( (const char*)xs, xs_len );
+    xmlFree( xs );
+
+    return ret; 
 }
 
 static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
