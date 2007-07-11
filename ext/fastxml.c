@@ -137,7 +137,21 @@ static VALUE fastxml_node_value(VALUE self)
 
 static VALUE fastxml_node_to_s(VALUE self)
 {
-    return Qnil;
+    VALUE ret, dv;
+    fxml_data_t *data;
+    xmlBufferPtr buf;
+
+    dv = rb_iv_get( self, "@lxml_node" );
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+    buf = xmlBufferCreate();
+    ret = Qnil;
+
+    if (xmlNodeDump(buf, data->doc, data->node, 0, 0) != -1) 
+        ret = rb_str_new( (const char*)buf->content, buf->use );
+
+    xmlBufferFree( buf );
+    return ret;
 }
 
 static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
