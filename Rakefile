@@ -11,6 +11,7 @@ require 'rbconfig'
 require 'rubyforge'
 
 $: << './lib'
+$: << './ext'
 require 'fastxml'
 full_name = "FastXml"
 short_name = full_name.downcase

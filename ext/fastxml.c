@@ -45,6 +45,7 @@ void Init_fastxml()
 {
     xmlXPathInit();
     VALUE rb_mFastXml = rb_define_module( "FastXml" );
+    rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
     rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
     rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
 
