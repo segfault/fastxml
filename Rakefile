@@ -1,26 +1,41 @@
 # $Id$
 require 'rubygems'
 require 'rake'
-require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rake/packagetask'
 require 'rake/gempackagetask'
 require 'rake/contrib/sshpublisher'
 require 'spec/rake/spectask'
+require 'rake/clean'
 require 'rbconfig'
 require 'rubyforge'
 
 $: << './lib'
 $: << './ext'
-require 'fastxml'
+require 'fastxml_lib'
 full_name = "FastXml"
 short_name = full_name.downcase
+
+extension = "fastxml"
+ext = "ext"
+ext_so = "#{ext}/#{extension}.#{Config::CONFIG['DLEXT']}"
+ext_files = FileList[
+  "#{ext}/*.c",
+  "#{ext}/*.h",
+  "#{ext}/extconf.rb",
+  "#{ext}/Makefile",
+  "lib"
+]
+
+
+CLEAN.include ["#{ext_so}", 'ext/hpricot_scan/Makefile', 
+                '*.gem']
              
 # Many of these tasks were garnered from zenspider's Hoe
 # just forced to work my way
 
 desc 'Default: run unit tests.'
-task :default => :spec
+task :default => ["#{extension}", :spec]
 
 spec = Gem::Specification.new do |s| 
   s.name = short_name
@@ -33,10 +48,10 @@ spec = Gem::Specification.new do |s|
   s.summary = "Fast Xml Library"
   s.rubyforge_project = short_name
   s.description = "A simple ruby interface to libxml (with hpricot-like syntax)"
-  s.files = FileList["{bin,lib,test_data}/**/*"].to_a
+  s.files = FileList["{bin,lib,ext,test_data}/**/*"].to_a
   s.require_path = "lib"
   s.autorequire = short_name
-  s.test_files = FileList["{test}/**/test*.rb"].to_a
+  s.test_files = FileList["{specs}/**/*spec.rb"].to_a
   s.has_rdoc = true
   s.extra_rdoc_files = %w[README LICENSE]
   s.add_dependency("rspec", ">= 1.0.3")
@@ -44,56 +59,35 @@ spec = Gem::Specification.new do |s|
   s.add_dependency("rubyforge", ">= #{::RubyForge::VERSION}")
 end
 
+desc "Builds just the #{extension} extension"
+task extension.to_sym => ["#{ext}/Makefile", ext_so ]
+
+file "#{ext}/Makefile" => ["#{ext}/extconf.rb"] do
+  Dir.chdir(ext) do ruby "extconf.rb" end
+end
+
+file ext_so => ext_files do
+  Dir.chdir(ext) do
+    sh(PLATFORM =~ /win32/ ? 'nmake' : 'make')
+  end
+  #mkdir_p ARCHLIB
+  #cp ext_so, ARCHLIB
+end
 
 desc "Task for cruise Control"
-task :cruise => ["spec"] do
+task :cruise => ["#{extension}","spec"] do
   out = ENV['CC_BUILD_ARTIFACTS']
-  return unless out
-  system "mv coverage #{out}"
+  system "mv coverage #{out}" if out
 end
 
 Spec::Rake::SpecTask.new do |t|
   t.rcov = true
-  t.spec_files = FileList[ 'test/*spec.rb' ]
-end
-
-
-
-Rake::TestTask.new do |t|
-  t.test_files = FileList[ 'test/test*.rb', 'test/*test.rb' ]
-  t.verbose = true
-end
-
-namespace :test do
-  desc 'Measures test coverage'
-  task :coverage do
-    rm_f "coverage"
-    rm_f "coverage.data"
-    rcov = "rcov --aggregate coverage.data --text-summary -Ilib"
-    system("#{rcov} --html test/test*.rb")
-    system("open coverage/index.html") if PLATFORM['darwin']
-  end
-  
-  desc 'Heckle the tests'
-  task :heckle do
-    system("heckle FeedEater::Feed")
-  end
-
-  desc 'Show which test files fail when run alone.'
-  task :deps do
-    tests = Dir["test/**/test_*.rb"]  +  Dir["test/**/*_test.rb"]
-
-    tests.each do |test|
-      if not system "ruby -Ibin:lib:test #{test} &> /dev/null" then
-        puts "Dependency Issues: #{test}"
-      end
-    end
-  end
+  t.spec_files = FileList[ 'specs/*spec.rb' ]
 end
 
 Rake::RDocTask.new do |rd|
   rd.main = "README"
-  rd.rdoc_files.include("README", "LICENSE", "lib/**/*.rb")
+  rd.rdoc_files.include("README", "LICENSE", "ext/*.c", "lib/**/*.rb")
   rd.title = "%s (%s) Documentation" % [ full_name, spec.version ]
   rd.rdoc_dir = 'doc'
 end
@@ -151,3 +145,4 @@ desc 'Install the package as a gem'
 task :install_gem => [:clean, :package] do
   sh "sudo gem install pkg/*.gem"
 end
+
