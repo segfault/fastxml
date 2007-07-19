@@ -37,6 +37,8 @@ static VALUE fastxml_node_value(VALUE self);
 static VALUE fastxml_node_value_set(VALUE self, VALUE new_val);
 static VALUE fastxml_node_innerxml(VALUE self);
 static VALUE fastxml_node_to_s(VALUE self);
+static VALUE fastxml_node_xpath(VALUE self);
+static VALUE fastxml_node_attr(VALUE self, VALUE attr_name);
 
 
 static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data);
@@ -65,6 +67,8 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlNode, "content", fastxml_node_value, 0 );
     rb_define_method( rb_cFastXmlNode, "content=", fastxml_node_value_set, 1 );
     rb_define_method( rb_cFastXmlNode, "inner_xml", fastxml_node_innerxml, 0 );
+	rb_define_method( rb_cFastXmlNode, "xpath", fastxml_node_xpath, 0 );
+	rb_define_method( rb_cFastXmlNode, "attr", fastxml_node_attr, 1 );
 }
 
 
@@ -97,6 +101,45 @@ static VALUE fastxml_node_name(VALUE self)
     return ret;
 }
 
+static VALUE fastxml_node_attr(VALUE self, VALUE attr_name)
+{
+	VALUE ret, dv;
+	fxml_data_t *data;
+	xmlChar *raw_ret, *name_str;
+	
+	dv = rb_iv_get( self, "@lxml_node" );
+	Data_Get_Struct( dv, fxml_data_t, data );
+	
+	name_str = (xmlChar*)StringValuePtr( attr_name );
+	raw_ret = xmlGetProp( data->node, name_str );
+	if (raw_ret == NULL)
+		return Qnil;
+		
+	ret = rb_str_new2( (const char*)raw_ret );
+	xmlFree( raw_ret );
+	
+	return ret;
+}
+
+static VALUE fastxml_node_xpath(VALUE self)
+{
+	VALUE ret, dv;
+	fxml_data_t *data;
+	xmlChar *raw_ret;
+	
+	dv = rb_iv_get( self, "@lxml_node" );
+	Data_Get_Struct( dv, fxml_data_t, data );
+	
+	raw_ret = xmlGetNodePath( data->node );
+	if (raw_ret == NULL)
+		return Qnil;
+	
+	ret = rb_str_new2( (const char*)raw_ret );
+	xmlFree( raw_ret );
+	
+	return ret;
+}
+
 static VALUE fastxml_node_value_set(VALUE self, VALUE new_val)
 {
     VALUE dv, val_s;
@@ -111,7 +154,7 @@ static VALUE fastxml_node_value_set(VALUE self, VALUE new_val)
     ents = xmlEncodeEntitiesReentrant( data->doc, (const xmlChar*)StringValuePtr(val_s) );
     spec = xmlEncodeSpecialChars( data->doc, ents );
 
-    printf("setting chars: %s\n", spec);
+   // printf("setting chars: %s\n", spec);
     xmlNodeSetContent( data->node, spec );
     xmlFree( ents );
 
@@ -175,14 +218,14 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
     xmlChar *xpath_expr;
 
     if (NIL_P(raw_xpath)) {
-        printf("got nil\n");
+        //printf("got nil\n");
         rb_raise(rb_eArgError, "nil passed as xpath");
         return Qnil;
     }
 
     xpath_s = rb_obj_as_string( raw_xpath );
     xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
-    printf("got xpath: %s\n", xpath_expr);
+    //printf("got xpath: %s\n", xpath_expr);
 
     dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
@@ -204,7 +247,7 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 
     xmlXPathFreeObject( xpath_obj );
     xmlXPathFreeContext( xpath_ctx ); 
-    printf("done\n");
+    //printf("done\n");
 
     return ret;
 }
@@ -219,11 +262,11 @@ static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *da
 
     ret = rb_ary_new();
     size = (nodes) ? nodes->nodeNr : 0;
-    printf("size: %d\n", size);
+    //printf("size: %d\n", size);
 
     for (i = 0; i < size; i++) {
         cur = nodes->nodeTab[i];
-        printf( "checking node: %s type: %d\n", cur->name, cur->type );
+        //printf( "checking node: %s type: %d\n", cur->name, cur->type );
         if (cur->type == XML_ELEMENT_NODE)
             continue;
 
@@ -300,7 +343,7 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
     rb_iv_set( self, "@raw_data", data_s );
 
     cstr = StringValuePtr( data_s );
-    printf( "cstr: %s\n", cstr );
+    //printf( "cstr: %s\n", cstr );
 
     xmlInitParser();
     data = ALLOC(fxml_data_t);
@@ -331,7 +374,7 @@ static void fastxml_data_mark( fxml_data_t *data )
 
 static void fastxml_data_free( fxml_data_t *data )
 {
-    printf("attempting to free\n");
+    //printf("attempting to free\n");
     if (data != NULL)
     {
         if (data->doc != NULL && data->node == NULL)
