@@ -12,12 +12,15 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+#include <libxslt/xslt.h>
+#include <libxslt/xsltInternals.h>
 
 typedef struct {
     xmlDocPtr doc;
     xmlNodePtr node;
     xmlXPathContextPtr xpathCtx; 
     xmlXPathObjectPtr xpathObj;     
+	xsltStylesheetPtr xslt;
 } fxml_data_t;
 
 static void fastxml_data_mark( fxml_data_t *data );
@@ -30,6 +33,10 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE data);
 static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath);
 static VALUE fastxml_doc_to_s(VALUE self);
 static VALUE fastxml_doc_root(VALUE self);
+static VALUE fastxml_doc_transform(VALUE self, VALUE xform);
+static VALUE fastxml_doc_stylesheet(VALUE self);
+static VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style);
+
 static VALUE fastxml_node_initialize(VALUE self);
 static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath);
 static VALUE fastxml_node_name(VALUE self);
@@ -57,6 +64,9 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
     rb_define_method( rb_cFastXmlDoc, "root", fastxml_doc_root, 0 );
+	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
+	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
+	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
     
     /* Node */
     rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
@@ -208,14 +218,67 @@ static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
 
 /* {{{ fastxml_doc 
  */
+static VALUE fastxml_doc_stylesheet(VALUE self)
+{
+	return rb_iv_get( self, "@lxml_style" );
+}
+
+static VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style)
+{
+	VALUE ret, dv, data_s, xslt_doc;
+	fxml_data_t *data;
+	char *cstr;		
+
+    xslt_doc = rb_class_new_instance(1, &style, rb_cFastXmlDoc );
+	
+    dv = rb_iv_get( xslt_doc, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+	data->xslt = xsltParseStylesheetDoc( data->doc );
+	rb_iv_set( self, "@lxml_style", xslt_doc );
+	
+	return Qnil;	
+}
+
+static VALUE fastxml_doc_transform(VALUE self, VALUE xform)
+{
+	VALUE ret, dv, xform_dv, ret_str, ret_dv;
+	fxml_data_t *my_data, *xf_data, *ret_data;
+	xmlDocPtr ret_doc;
+
+	if (xform == Qnil)
+		return Qnil;
+	
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, my_data );
+	xform_dv = rb_iv_get( xform, "@lxml_doc" );
+	Data_Get_Struct( xform_dv, fxml_data_t, xf_data );
+	
+	if (xf_data->xslt == NULL)
+		return Qnil;
+
+	ret_doc = (xmlDocPtr)xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
+	ret_str = rb_str_new2( "<shouldNeverBeSeen/>" );
+	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc );
+	ret_dv = rb_iv_get( ret, "@lxml_doc" );
+	Data_Get_Struct( ret_dv, fxml_data_t, ret_data );
+	xmlFree( ret_data->doc );
+	ret_data->doc = ret_doc;
+	
+	return ret;
+}
 
 static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 {
     VALUE ret, dv, xpath_s;
+	xmlXPathCompExprPtr xpath_xpr;
     xmlXPathContextPtr xpath_ctx; 
     xmlXPathObjectPtr xpath_obj;     
     fxml_data_t *data;
     xmlChar *xpath_expr;
+	xmlNodePtr root = NULL;
+	xmlNsPtr *ns_list = NULL;
+	xmlNsPtr *cur_ns = NULL;
+	int ns_cnt = 0;
 
     if (NIL_P(raw_xpath)) {
         //printf("got nil\n");
@@ -225,7 +288,7 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 
     xpath_s = rb_obj_as_string( raw_xpath );
     xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
-    //printf("got xpath: %s\n", xpath_expr);
+    printf("got xpath: %s\n", xpath_expr);
 
     dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
@@ -236,18 +299,49 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
         return Qnil;
     }
 
-    xpath_obj = xmlXPathEvalExpression( xpath_expr, xpath_ctx );
+	root = xmlDocGetRootElement( data->doc );
+	ns_list = xmlGetNsList( data->doc, root );
+	while (cur_ns != NULL) { 
+		printf( "%s -> %s\n", (*cur_ns)->prefix, (*cur_ns)->href );
+		xmlXPathRegisterNs( xpath_ctx, (*cur_ns)->prefix, (*cur_ns)->href );
+		cur_ns++;
+	}
+	
+	xpath_ctx->namespaces = ns_list;
+	xpath_ctx->nsNr = ns_cnt;
+
+	if (root->ns != NULL) {
+		printf("here %s -> %s\n\n", root->ns->prefix, root->ns->href );
+		xmlXPathRegisterNs( xpath_ctx, root->ns->prefix, root->ns->href );
+		xpath_ctx->nsNr++;
+	}
+	printf("nsNr: %d\n", xpath_ctx->nsNr);
+	
+	xpath_xpr = xmlXPathCompile( xpath_expr );
+	if (xpath_xpr == NULL) {
+		rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
+		xmlXPathFreeContext( xpath_ctx );
+		xmlFree( ns_list );
+		return Qnil;
+	}
+	
+	//xpath_obj = xmlXPathEval( xpath_expr, xpath_ctx );
+    //xpath_obj = xmlXPathEvalExpression( xpath_expr, xpath_ctx );	
+	xpath_obj = xmlXPathCompiledEval( xpath_xpr, xpath_ctx );
     if(xpath_obj == NULL) {
         rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
+		xmlXPathFreeCompExpr( xpath_xpr );
         xmlXPathFreeContext( xpath_ctx ); 
+		xmlFree( ns_list );
         return Qnil;
     }    
 
     ret = fastxml_nodeset_to_obj( xpath_obj, data );
 
+	xmlFree( ns_list );
+	xmlXPathFreeCompExpr( xpath_xpr );
     xmlXPathFreeObject( xpath_obj );
     xmlXPathFreeContext( xpath_ctx ); 
-    //printf("done\n");
 
     return ret;
 }
@@ -262,14 +356,11 @@ static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *da
 
     ret = rb_ary_new();
     size = (nodes) ? nodes->nodeNr : 0;
-    //printf("size: %d\n", size);
+    printf("size: %d\n", size);
 
     for (i = 0; i < size; i++) {
         cur = nodes->nodeTab[i];
         //printf( "checking node: %s type: %d\n", cur->name, cur->type );
-        if (cur->type == XML_ELEMENT_NODE)
-            continue;
-
 
         chld = ALLOC(fxml_data_t);
         memset( chld, 0, sizeof(chld) );
