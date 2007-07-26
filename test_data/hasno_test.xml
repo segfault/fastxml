@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
+  <title>tech addict - home</title>
+  <id>tag:hasno.info,2007:mephisto/</id>
+  <generator version="0.7.3" uri="http://mephistoblog.com">Mephisto Noh-Varr</generator>
+  <link href="http://hasno.info/feed/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="http://hasno.info/" rel="alternate" type="text/html"/>
+  <updated>2007-06-26T00:32:34Z</updated>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-06-26:2302</id>
+    <published>2007-06-26T00:26:00Z</published>
+    <updated>2007-06-26T00:32:34Z</updated>
+    <category term="apple"/>
+    <category term="iTerm"/>
+    <link href="http://hasno.info/2007/6/26/fixing-vim-arrow-keys-in-iterm" rel="alternate" type="text/html"/>
+    <title>fixing vim arrow keys in iTerm</title>
+<content type="html">
+            &lt;p&gt;I've decided to give iTerm a chance. My normal workflow involves many Terminal or xterm windows open with vim in them. iTerm's tab's make it very enticing, the only problem I've run into is arrow key usage under vim. I'm used to using hjkl for navigation, but it takes a mental context switch. Which is especially annoying when switching from say Visual Studio, where the arrow keys are my friend. &lt;/p&gt;&lt;p&gt;After a little monkeying around, it seems that the the Keyboard profiles are the problem. I've removed everything and now my arrow keys work without having to modify the TERM environment variable.&lt;/p&gt;
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-06-21:2175</id>
+    <published>2007-06-21T19:46:00Z</published>
+    <updated>2007-06-21T19:55:51Z</updated>
+    <category term="random"/>
+    <category term="apple"/>
+    <category term="crash"/>
+    <category term="razr v3xxx"/>
+    <link href="http://hasno.info/2007/6/21/compounded-errors" rel="alternate" type="text/html"/>
+    <title>compounded errors</title>
+<content type="html">
+            &lt;p&gt;I've recently purchased a Motorola Razr v3xxx (did they really need all those x's?) in order to get access to 3g wireless. I'm coming from a Razr v3, so the interface is familiar, and the phone seems fine. Except of course for the crashing. Anything involving data transfer will eventually cause this thing to crash. Hard, as in the softkeys no longer respond to anything. The only resolution is to pull the battery. If that weren't enough, this has unearthed an issue with pppd on my macbook.&lt;/p&gt;&lt;p&gt;Apparently the osx is none too fond of bluetooth devices disappearing. The ppp daemon sits in a perpetual &quot;Disconnecting&quot; state. Killing the process results in a zombie. I'm not certain what the Internet Connection tool checks to find the current status of the bluetooth connection, but it is inextricably linked to the pppd process which is itself stuck. At this point this requires me to reboot the macbook in order to reconnect to the net.&lt;/p&gt;&lt;p&gt;I wonder if anyone else has run into this pair of issues, then again this may be one of those ultra niche things. How many people could there be using bluetooth to ride their phone's network connection?&lt;/p&gt;
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-06-05:1789</id>
+    <published>2007-06-05T03:01:00Z</published>
+    <updated>2007-06-05T11:32:29Z</updated>
+    <category term="code"/>
+    <category term="mephisto"/>
+    <category term="rss"/>
+    <category term="ruby"/>
+    <category term="xml"/>
+    <link href="http://hasno.info/2007/6/5/feedreader-and-hpricot-feed-parsing" rel="alternate" type="text/html"/>
+    <title>feedreader and hpricot feed parsing</title>
+<content type="html">
+            After doing a little profiling (not that it was necessary) I found that REXML was the source of the lag in feed parsing. The obvious solution is to switch from REXML to some other xml parser. Having using libxml for c projects, I must admit a deep dislike of the API. The ruby-libxml interface does nothing to hide this api, and was therefore of out the running. So that left me with hpricot, which is has a great api and can parse xml/html quickly. &lt;br /&gt;&lt;br /&gt;At this point I have a feedtools rewrite/replacement sitting in svn://hasno.info/feedtools/trunk, it's currently going by the name FeedEater until such a time as it merges in with feedtools. I've left the interface almost the same, so the regular duckie rules apply. It is MUCH faster than feedtools, but does not to nearly as much. Feedtools attempts to fix any and all issues with feeds, anything from entity conversion to changing feed:// urls into http:// urls. The simple library I've written does none of that. It parses the feed into some ruby objects and spits it back at you. Though I did provide support for caching and have implemented a matching database cache (it basically uses the feedtools cache table).&lt;br /&gt;&lt;br /&gt;Since all this feed parsing cruft was done in order to make the mephisto feedreader plugin faster, I've gone ahead and created a branch that uses the new library. You'll find the branch at svn://hasno.info/mephisto/plugins/branches/mephisto_feedreader. Give the library and/or plugin a try. &lt;br /&gt;&lt;br /&gt;As a aside, after all this hpricot goodness I've decided that at some point I want to write a ruby-ish hpricot-ish libxml wrapper.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-05-18:1487</id>
+    <published>2007-05-18T02:55:00Z</published>
+    <updated>2007-05-18T03:00:47Z</updated>
+    <category term="random"/>
+    <category term="vim"/>
+    <link href="http://hasno.info/2007/5/18/windows-vim-7-1-2" rel="alternate" type="text/html"/>
+    <title>windows vim 7.1.2 </title>
+<content type="html">
+            Since Bram has release Vim 7.1, I've rebuilt my windows vim install. It's built with huge, ruby, python, perl, and IME (multibyte). The binaries are optimized for pentium4+ machines with SSE2. You can get the installer &lt;a href=&quot;http://segfault.hasno.info/vim/gvim71.zip&quot;&gt;here&lt;/a&gt;.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-05-16:1462</id>
+    <published>2007-05-16T02:17:00Z</published>
+    <updated>2007-05-16T02:43:15Z</updated>
+    <category term="code"/>
+    <category term="mephisto"/>
+    <category term="ruby"/>
+    <link href="http://hasno.info/2007/5/16/feedreader-plugin-update" rel="alternate" type="text/html"/>
+    <title>feedreader plugin update</title>
+<content type="html">
+            I've updated the feedreader mephisto plugin fixing a serious lack of caching. If you happen to use this plugin to display rss feeds on your blog, I highly suggest getting the current version. I should note that the current version will only work with the mephisto trunk as many plugin architecture changes have happened since the 0.7.3 release. The curious can check the &lt;a href=&quot;http://trac.hasno.info/mephisto&quot; /&gt;trac&lt;/a&gt; instance for more information. At some point I'll get around to modifying the other plugins, I'd like to have them take advantage of the UI based configuration stuff that's been added to mephisto.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-05-07:1379</id>
+    <published>2007-05-07T00:11:00Z</published>
+    <updated>2007-05-07T02:12:43Z</updated>
+    <category term="random"/>
+    <category term="iis"/>
+    <link href="http://hasno.info/2007/5/7/iis-7-surprises" rel="alternate" type="text/html"/>
+    <title>iis 7 surprises</title>
+<content type="html">
+            So I've started looking at IIS 7 today and low and behold they've finally done away with the damned &lt;a href=&quot;http://www.microsoft.com/technet/prodtechnol/windowsserver2003/library/iis/43a51d34-7c81-413b-9727-ec9a19d0b428.mspx&quot;&gt;metabase&lt;/a&gt; and have replaced it with some &lt;a href=&quot;http://www.iis.net/articles/view.aspx/Use-IIS7-Administration-Tools/Using-XML-Configuration/Getting-Started-with-IIS7-Configuration?tabid=1&quot; /&gt;xml configuration&lt;/a&gt; files. It'll be nice to actually be able to diff webserver configs.  At some point I hope to play around with some of the newer alternative http servers on the scene, like nginix. At this moment though, I'm checking out what's changing in the windows world. Also whilst poking around Vista I've also noticed that they made the firewall not suck. Kudos, Vista does indeed look like a nice step forward though I can understand why people's responses seem to be mixed. Change is indeed rough. I don't think it helps that all of the previous releases worked very hard to provide a familiar operating environment. At some point it pays to be more like the linux kernel developers, natural api evolution seems to lead to cleaner stuff.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-21:1256</id>
+    <published>2007-04-21T13:20:00Z</published>
+    <updated>2007-04-22T14:31:05Z</updated>
+    <category term="random"/>
+    <category term="apple"/>
+    <link href="http://hasno.info/2007/4/21/fun-with-applecare" rel="alternate" type="text/html"/>
+    <title>fun with applecare</title>
+<content type="html">
+            So after establishing that my harddrive was indeed dead and dying, I called AppleCare. Until yesterday there had been no negative AppleCare  experiences on my part. I had heard some horror stories from others but had never experienced such a blunder. Let's establish some facts here. My macbook is not stock, it has a 160gb drive and 2gb of ram. Those are considered custom upgrades, and this information is attached to my serial number supposedly. So when calling, after providing my serial number, I assume that a person would &lt;em&gt;check&lt;/em&gt; to see if the harddrive in question was availible at the applestore they were directing me to. That didn't happen, and we drove over an hour out of our way to be told &quot;Sorry we don't have that here, we could order it or take the laptop and get it back to you&quot;. To be fair, every person we talked to was very friendly and helpful. On the flip side, taking a half day from work and driving around to get nothing done right before traveling is not my idea of a good time. &lt;br /&gt;&lt;br /&gt;I was understandably angry at this point and decided to spread the love in apple's general direction. The woman I spoke to was very nice and helpful. She informed me that &lt;strong&gt;no applestore would have my drive&lt;/strong&gt; because it was custom. Apparently they do keep a stockpile of parts on hand, but generally not for the custom configurations. Excellent. I'd spent a good part of my day trying to do something that was not possible &lt;strong&gt;at the onset&lt;/strong&gt;. &lt;br /&gt;&lt;br /&gt;At this point they are sending me another harddrive, which may or may not arrive before I have to travel again. On the bright side, my bitching got me a $60 gift certificate to the online applestore. The only downside to that, is the fact that we picked up a power adapter from the store before leaving and the certificate can not be used at a brick and mortar store. Good times. &lt;br /&gt;&lt;br /&gt;&amp;lt;&lt;strong&gt;update&lt;/strong&gt;&amp;gt;It should be noted that I did mention that I had a 160gb drive and that I wanted to find out where I could get a new drive today if it was possible. I'd call that along with my serial number enough information to provide accurate information. At this point I still have not received the certificate email either. I have received an email for a customer relations survey.&amp;lt;/&lt;strong&gt;update&lt;/strong&gt;&amp;gt;&lt;br /&gt;
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-20:1241</id>
+    <published>2007-04-20T15:57:00Z</published>
+    <updated>2007-04-20T16:08:22Z</updated>
+    <category term="random"/>
+    <category term="apple"/>
+    <link href="http://hasno.info/2007/4/20/more-click" rel="alternate" type="text/html"/>
+    <title>more click!</title>
+<content type="html">
+            Last night I noticed my laptop seriously slowing down due to some random processes hogging the CPUs. I decided after killing a few things, that maybe it was time for a reboot. My little macbook displayed the missing folder icon a few minutes thereafter. Excellent. 11:30pm, non-booting laptop, work stuff almost done with no code check-in in the past few days (I prefer to only check in working code, unless I've made really major changes)... Great. So the next morning I fire up DiskWarrior and amazingly the machine starts spewing more click noise than an angry &lt;a href=&quot;http://en.wikipedia.org/wiki/Sandawe_language&quot;&gt;Sandawe&lt;/a&gt;. Hopefully I can recover the things I was working on and my vm. At least most of my honeymoon pictures are on my server.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-18:1221</id>
+    <published>2007-04-18T14:24:00Z</published>
+    <updated>2007-04-18T14:46:37Z</updated>
+    <category term="random"/>
+    <link href="http://hasno.info/2007/4/18/rating-knowledge" rel="alternate" type="text/html"/>
+    <title>rating knowledge</title>
+<content type="html">
+            Some recent experiences have caused me to consider how I rate my knowledge of things. To date I've relied on some combination of recency and depth. The main point of that combination being the loss of information over time. Things I did only 6 months ago from memory, may require more effort and thought to do now. So how do you rate your knowledge given the fact that the only information you may really know is what your dealing with currently? There are obviously some limits to this idea. I can recall the Big-O times for a variety of structures and algorithms, but I have yet to actually put that knowledge to any useful test. Does that mean that I don't actually posses the knowledge or am incapable of using it? Given a scale of 1-10, what would rating would you give someone's knowledge given the following scenarios:&lt;ul&gt;&lt;li&gt;The person has API exact knowledge off the top of their head&lt;/li&gt;&lt;li&gt;The person has rough API knowledge off the top of their head but is fuzzy about details and wrong about some details&lt;/li&gt;&lt;li&gt;The person has no API knowledge off the top of their head&lt;/li&gt;&lt;li&gt;The person has incorrect API knowledge&lt;/li&gt;&lt;li&gt;The person figures out the API based off of experience&lt;/li&gt;&lt;/ul&gt;&lt;br /&gt;&lt;br /&gt;
+I may have experience with linux and all sorts of other things, but as I don't use that every day the knowledge recedes into the dark corners of my mind only revealed after much shaking. This leads me to question the level of import I'd previously applied to my choice of daytime job. I had originally believed that my free-time escapades into the other technical roles and systems would maintain my knowledge of those systems at the level required to easily jump into a situation needing those skills. At this point, I can't say I believe that anymore. Some recent thorough testing has revealed some softness in those areas. While after some head shaking (remember those dark recesses of my mind where the real knowledge hides?) I can recall the necessary information, the time between question and answer is too short to provide the actual answer. &lt;br /&gt;So the question I'm left with is: What do I do to fix this? I wonder if anyone else has a suggestion. &lt;br /&gt;&lt;br /&gt;As a side note, I've come to the conclusion that my writing is much better than my speaking. I plan on giving up the latter as it has been nothing but a hindrance in life.&lt;br /&gt;
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-12:1165</id>
+    <published>2007-04-12T18:19:00Z</published>
+    <updated>2007-04-12T18:24:58Z</updated>
+    <category term="random"/>
+    <category term="vim"/>
+    <link href="http://hasno.info/2007/4/12/windows-vim-7-0-224" rel="alternate" type="text/html"/>
+    <title>windows vim 7.0.224</title>
+<content type="html">
+            I've gotten around to rebuilding vim 7 with ruby/perl/python for windows. The last version was about 100 patches behind, so this should take care of whatever problems/issues those little gems fix. Usual optimizations apply pentium3+, SSE2. You can find it &lt;a href=&quot;http://segfault.hasno.info/vim/gvim70.zip&quot;&gt;here&lt;/a&gt;. As I have a macbook now, I tend to just use a macports built vim. So these updates will probably be done every few months.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-11:1180</id>
+    <published>2007-04-11T22:42:00Z</published>
+    <updated>2007-04-14T22:11:02Z</updated>
+    <category term="code"/>
+    <category term="hl7"/>
+    <category term="ruby"/>
+    <link href="http://hasno.info/2007/4/11/ruby-hl7-creating-a-new-segment-class" rel="alternate" type="text/html"/>
+    <title>ruby-hl7 - creating a new segment class</title>
+<content type="html">
+            Ok, so you want to do something more than muck with some fields in passing segments. Ruby-hl7 provides a nice way to encapsulate specific segments as objects, dealing with field aliases instead of field id numbers. After all isn't &lt;em&gt;my_obj.last_checkup_date&lt;/em&gt; a little clearer than &lt;em&gt;my_obj.e11&lt;/em&gt;. I certainly think so, which is why you can define a class for a segment type. Let's create a class describing a BLG (Billing) segment.&lt;br /&gt;
+&lt;table class=&quot;CodeRay&quot;&gt;&lt;tr&gt;
+  &lt;td title=&quot;click to toggle&quot; class=&quot;line_numbers&quot;&gt;&lt;pre&gt;1&lt;tt&gt;
+&lt;/tt&gt;2&lt;tt&gt;
+&lt;/tt&gt;3&lt;tt&gt;
+&lt;/tt&gt;4&lt;tt&gt;
+&lt;/tt&gt;5&lt;tt&gt;
+&lt;/tt&gt;6&lt;tt&gt;
+&lt;/tt&gt;7&lt;tt&gt;
+&lt;/tt&gt;8&lt;tt&gt;
+&lt;/tt&gt;9&lt;tt&gt;
+&lt;/tt&gt;&lt;strong&gt;10&lt;/strong&gt;&lt;tt&gt;
+&lt;/tt&gt;11&lt;tt&gt;
+&lt;/tt&gt;12&lt;tt&gt;
+&lt;/tt&gt;13&lt;tt&gt;
+&lt;/tt&gt;14&lt;tt&gt;
+&lt;/tt&gt;15&lt;tt&gt;
+&lt;/tt&gt;16&lt;tt&gt;
+&lt;/tt&gt;17&lt;tt&gt;
+&lt;/tt&gt;18&lt;tt&gt;
+&lt;/tt&gt;&lt;/pre&gt;&lt;/td&gt;
+  &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# When a message is parsed, the parser checks for a class matching this format&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;span class=&quot;r&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;cl&quot;&gt;HL7::Message::Segment::BLG&lt;/span&gt; &amp;lt; &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Message&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Segment&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  weight &lt;span class=&quot;i&quot;&gt;600&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# we want this to go after every other segment (they are sorted ascendingly)&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;tt&gt;
+&lt;/tt&gt;  &lt;span class=&quot;c&quot;&gt;# we're adding a field alias to BLG.1, which happens to be &amp;quot;when to charge&amp;quot; in the docs&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  add_field &lt;span class=&quot;sy&quot;&gt;:name&lt;/span&gt;=&amp;gt;&lt;span class=&quot;sy&quot;&gt;:when_to_charge&lt;/span&gt; &lt;tt&gt;
+&lt;/tt&gt;  &lt;tt&gt;
+&lt;/tt&gt;  &lt;span class=&quot;c&quot;&gt;# we'll include some value checking logic in the next field we add&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  &lt;span class=&quot;co&quot;&gt;VALID_CHARGES&lt;/span&gt; = &lt;span class=&quot;s&quot;&gt;&lt;span class=&quot;dl&quot;&gt;%w[&lt;/span&gt;&lt;span class=&quot;k&quot;&gt; CH CO DR DP GR NC NP RS &lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;]&lt;/span&gt;&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  add_field &lt;span class=&quot;sy&quot;&gt;:name&lt;/span&gt;=&amp;gt;&lt;span class=&quot;sy&quot;&gt;:charge_type&lt;/span&gt; &lt;span class=&quot;r&quot;&gt;do&lt;/span&gt; |c|&lt;tt&gt;
+&lt;/tt&gt;     raise &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Exception&lt;/span&gt;.new(&lt;span class=&quot;s&quot;&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;Invalid charge type&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;r&quot;&gt;unless&lt;/span&gt; c&lt;tt&gt;
+&lt;/tt&gt;     raise &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Exception&lt;/span&gt;.new(&lt;span class=&quot;s&quot;&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;Invalid charge type&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;r&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;co&quot;&gt;VALID_CHARGES&lt;/span&gt;.index(c)&lt;tt&gt;
+&lt;/tt&gt;     c &lt;span class=&quot;c&quot;&gt;# we need to return the final value of c as this is called on read/write&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  &lt;span class=&quot;r&quot;&gt;end&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;tt&gt;
+&lt;/tt&gt;  &lt;span class=&quot;c&quot;&gt;# we can explicitly set the field id, this would point to BLG.4&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;  add_field &lt;span class=&quot;sy&quot;&gt;:name&lt;/span&gt;=&amp;gt;&lt;span class=&quot;sy&quot;&gt;:charge_type_reason&lt;/span&gt;, &lt;span class=&quot;sy&quot;&gt;:idx&lt;/span&gt;=&amp;gt;&lt;span class=&quot;i&quot;&gt;4&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;span class=&quot;r&quot;&gt;end&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+
+&lt;br /&gt;&lt;br /&gt;Now let's use it:&lt;br /&gt;
+&lt;table class=&quot;CodeRay&quot;&gt;&lt;tr&gt;
+  &lt;td title=&quot;click to toggle&quot; class=&quot;line_numbers&quot;&gt;&lt;pre&gt;1&lt;tt&gt;
+&lt;/tt&gt;2&lt;tt&gt;
+&lt;/tt&gt;3&lt;tt&gt;
+&lt;/tt&gt;4&lt;tt&gt;
+&lt;/tt&gt;5&lt;tt&gt;
+&lt;/tt&gt;6&lt;tt&gt;
+&lt;/tt&gt;7&lt;tt&gt;
+&lt;/tt&gt;8&lt;tt&gt;
+&lt;/tt&gt;9&lt;tt&gt;
+&lt;/tt&gt;&lt;strong&gt;10&lt;/strong&gt;&lt;tt&gt;
+&lt;/tt&gt;11&lt;tt&gt;
+&lt;/tt&gt;&lt;/pre&gt;&lt;/td&gt;
+  &lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# create the empty hl7 message&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;msg = &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Message&lt;/span&gt;.new&lt;tt&gt;
+&lt;/tt&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;span class=&quot;c&quot;&gt;# create our segments and fill in some data&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;msh = &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Message&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Segment&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;MSH&lt;/span&gt;.new &lt;tt&gt;
+&lt;/tt&gt;blg = &lt;span class=&quot;co&quot;&gt;HL7&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Message&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;Segment&lt;/span&gt;::&lt;span class=&quot;co&quot;&gt;BLG&lt;/span&gt;.new&lt;tt&gt;
+&lt;/tt&gt;blg.when_to_charge = &lt;span class=&quot;co&quot;&gt;Date&lt;/span&gt;.new.to_s&lt;tt&gt;
+&lt;/tt&gt;blg.charge_type = &lt;span class=&quot;s&quot;&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;CH&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;tt&gt;
+&lt;/tt&gt;&lt;tt&gt;
+&lt;/tt&gt;msg &amp;lt;&amp;lt; msh&lt;tt&gt;
+&lt;/tt&gt;msg &amp;lt;&amp;lt; blg&lt;/pre&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+
+&lt;br /&gt;There you go, the suggested method for dealing with known segments.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-04-01:970</id>
+    <published>2007-04-01T23:42:00Z</published>
+    <updated>2007-04-10T13:10:31Z</updated>
+    <category term="code"/>
+    <category term="hl7"/>
+    <category term="ruby"/>
+    <link href="http://hasno.info/2007/4/1/ruby-hl7-in-the-wild" rel="alternate" type="text/html"/>
+    <title>ruby-hl7 in the wild</title>
+<content type="html">
+            Ron Sweeney put together a cool little &lt;a href=&quot;http://www.clubpacswestmi.net/articles/2007/04/01/a-ruby-hl7-sniffer&quot;&gt;HL7 Sniffer&lt;/a&gt; that uses libpcap to pull messages from the wire. To my knowledge this is the first use of ruby-hl7 outside of my own personal usage. So props to Ron for creating a cool app. I'll be playing with it when I get back into the States.
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-03-24:812</id>
+    <published>2007-03-24T07:13:00Z</published>
+    <updated>2007-03-24T07:15:11Z</updated>
+    <category term="random"/>
+    <category term="japan"/>
+    <link href="http://hasno.info/2007/3/24/japan-trip-site" rel="alternate" type="text/html"/>
+    <title>japan trip site</title>
+<content type="html">
+            We're going to attempt to blog daily from Japan using &lt;a href=&quot;http://triptojapan.info&quot;&gt;triptojapan&lt;/a&gt;. We'll be posting pictures in the blog as well as short write-ups of the places we visit. One more day and I'm on a plane to Japan!
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-03-20:709</id>
+    <published>2007-03-20T19:40:00Z</published>
+    <updated>2007-03-20T20:13:00Z</updated>
+    <category term="random"/>
+    <category term="funny"/>
+    <link href="http://hasno.info/2007/3/20/null-modem-castle" rel="alternate" type="text/html"/>
+    <title>null modem castle</title>
+<content type="html">
+            One of my co-workers went a little null modem crazy last night and created his very own fort. He's probably going to need to scale up a little if he plans to reside in it. At ~$2 per null modem connector we estimate the value of his creation to be around $400. It's worth noting the lead-solder dipped cannon (pipe elbow).&lt;br /&gt;&lt;br /&gt;Marvel at the imposing ramparts!&lt;br /&gt;
+&lt;img src=&quot;http://hasno.info/gallery/d/7580-2/IMGP0123.JPG&quot; alt=&quot;it scares the neighbors&quot; /&gt;&lt;br /&gt;&lt;br /&gt;No one storming his doors.&lt;br /&gt;
+&lt;img src=&quot;http://hasno.info/gallery/d/7576-2/IMGP0122.JPG&quot; alt=&quot;oooh kowai desu ne&quot; /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;img src=&quot;http://hasno.info/gallery/d/7572-2/IMGP0121.JPG&quot; alt=&quot;wewt&quot; /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;Those gates sure look tall.&lt;br /&gt;&lt;img src=&quot;http://hasno.info/gallery/d/7567-2/IMGP0124.JPG&quot; alt=&quot;fear the gates&quot; /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;Check out our official 24-7 sys-admin:&lt;br /&gt;
+&lt;img src=&quot;http://hasno.info/gallery/d/7584-2/IMGP0095.JPG&quot; alt=&quot;always on the job&quot; /&gt;
+          </content>  </entry>
+  <entry xml:base="http://hasno.info/">
+    <author>
+      <name>segfault</name>
+    </author>
+    <id>tag:hasno.info,2007-03-19:697</id>
+    <published>2007-03-19T05:00:00Z</published>
+    <updated>2007-03-19T05:14:47Z</updated>
+    <category term="random"/>
+    <category term="coding"/>
+    <category term="ruby"/>
+    <link href="http://hasno.info/2007/3/19/by-any-other-name" rel="alternate" type="text/html"/>
+    <title>by any other name</title>
+<content type="html">
+            Gary from &lt;a href=&quot;http://newhavenrubyists.stikipad.com/wiki/&quot;&gt;nh.rb&lt;/a&gt; was wondering why I chose the name Ruby-HL7 instead of just HL7 (which IMO is simpler and to the point). Originally I hadn't put much thought into the project name, I just figured Ruby-HL7 since it was an HL7 library for Ruby. Considering the fact that there is no other library it probably would've been fine to just name it HL7. This got me considering my namespace naming choices. HL7::Message::Segment::MSH seems a bit long to me, I'll probably be changing that to HL7::Segment::MSH or something even shorter. I'm wondering what others think about this and verbose naming in general. You seem to find it a lot in Java projects, &quot;object.FuzzySlipperStatusCode&quot;. Then again is saving a few keystrokes worth killing the clarity that some of these names provide. We don't want to go too far down the minimalist path or we'll get acronym variable names (think &quot;object.fssc&quot;).
+          </content>  </entry>
+</feed>

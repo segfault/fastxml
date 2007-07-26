@@ -37,6 +37,8 @@ static VALUE fastxml_doc_transform(VALUE self, VALUE xform);
 static VALUE fastxml_doc_stylesheet(VALUE self);
 static VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style);
 
+VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath);
+
 static VALUE fastxml_node_initialize(VALUE self);
 static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath);
 static VALUE fastxml_node_name(VALUE self);
@@ -168,7 +170,6 @@ static VALUE fastxml_node_value_set(VALUE self, VALUE new_val)
     xmlNodeSetContent( data->node, spec );
     xmlFree( ents );
 
-
     return new_val;
 }
 
@@ -176,14 +177,17 @@ static VALUE fastxml_node_value(VALUE self)
 {
     VALUE ret, dv;
     fxml_data_t *data;
+	xmlChar *cont;
 
     dv = rb_iv_get( self, "@lxml_node" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
 
-    if (data->node->content == NULL)
+	cont = xmlNodeGetContent( data->node );
+
+    if (cont == NULL)
         return Qnil;
 
-    ret = rb_str_new2( (const char*)data->node->content );
+    ret = rb_str_new2( (const char*)cont );
 
     return ret;
 }
@@ -209,7 +213,7 @@ static VALUE fastxml_node_to_s(VALUE self)
 
 static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
 {
-    return Qnil;
+    return fastxml_xpath_search( self, raw_xpath );
 }
 
 
@@ -267,7 +271,33 @@ static VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	return ret;
 }
 
-static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
+static VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
+{
+	VALUE path_bits = rb_str_split( orig_expr, "/" );
+	VALUE ns_prefix = rb_str_new2( (const char*)root_ns );
+	VALUE ns_indic = rb_str_new2( ":" );
+	VALUE slash = rb_str_new2( "/" );
+	VALUE path_bit, str_idx;
+	VALUE ret_ary = rb_ary_new();
+	long i;
+	
+	rb_str_append( ns_prefix, ns_indic );
+    for (i=0; i<RARRAY(path_bits)->len; i++) {
+        path_bit = RARRAY(path_bits)->ptr[i];
+		
+		if (RSTRING(path_bit)->len > 0) {
+			str_idx = rb_funcall( path_bit, rb_intern( "index" ), 1, ns_indic );
+			if (str_idx == Qnil || str_idx == Qfalse) // didn't find the :, so it looks like we don't have a namespace
+				path_bit = rb_str_plus( ns_prefix, path_bit );
+		}	
+		
+		rb_ary_push( ret_ary, path_bit );
+    }
+	
+	return rb_ary_join( ret_ary, slash );
+}
+
+VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 {
     VALUE ret, dv, xpath_s;
 	xmlXPathCompExprPtr xpath_xpr;
@@ -278,17 +308,13 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 	xmlNodePtr root = NULL;
 	xmlNsPtr *ns_list = NULL;
 	xmlNsPtr *cur_ns = NULL;
+	xmlChar *root_ns = NULL;
 	int ns_cnt = 0;
 
     if (NIL_P(raw_xpath)) {
-        //printf("got nil\n");
         rb_raise(rb_eArgError, "nil passed as xpath");
         return Qnil;
     }
-
-    xpath_s = rb_obj_as_string( raw_xpath );
-    xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
-    printf("got xpath: %s\n", xpath_expr);
 
     dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
@@ -299,24 +325,35 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
         return Qnil;
     }
 
-	root = xmlDocGetRootElement( data->doc );
+	root = data->node;
+	if (root == NULL)
+		root = xmlDocGetRootElement( data->doc );
+		
+	xpath_ctx->node = root;
 	ns_list = xmlGetNsList( data->doc, root );
 	while (cur_ns != NULL) { 
-		printf( "%s -> %s\n", (*cur_ns)->prefix, (*cur_ns)->href );
 		xmlXPathRegisterNs( xpath_ctx, (*cur_ns)->prefix, (*cur_ns)->href );
 		cur_ns++;
 	}
 	
 	xpath_ctx->namespaces = ns_list;
 	xpath_ctx->nsNr = ns_cnt;
+	
+	xpath_s = rb_obj_as_string( raw_xpath );
 
-	if (root->ns != NULL) {
-		printf("here %s -> %s\n\n", root->ns->prefix, root->ns->href );
-		xmlXPathRegisterNs( xpath_ctx, root->ns->prefix, root->ns->href );
+
+	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
+		root_ns = (xmlChar*)root->ns->prefix;
+		if (root_ns == NULL) 
+			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; // alternatives? how do other xpath processors handle root/default namespaces?
+
+		xmlXPathRegisterNs( xpath_ctx, root_ns, root->ns->href );
+		// need to update the xpath expression
+		xpath_s = munge_xpath_namespace( xpath_s, root_ns );
 		xpath_ctx->nsNr++;
 	}
-	printf("nsNr: %d\n", xpath_ctx->nsNr);
 	
+	xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
 	xpath_xpr = xmlXPathCompile( xpath_expr );
 	if (xpath_xpr == NULL) {
 		rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
@@ -325,8 +362,7 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 		return Qnil;
 	}
 	
-	//xpath_obj = xmlXPathEval( xpath_expr, xpath_ctx );
-    //xpath_obj = xmlXPathEvalExpression( xpath_expr, xpath_ctx );	
+
 	xpath_obj = xmlXPathCompiledEval( xpath_xpr, xpath_ctx );
     if(xpath_obj == NULL) {
         rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
@@ -343,7 +379,12 @@ static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
     xmlXPathFreeObject( xpath_obj );
     xmlXPathFreeContext( xpath_ctx ); 
 
-    return ret;
+    return ret;	
+}
+
+static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
+{
+	return fastxml_xpath_search( self, raw_xpath );
 }
 
 static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
@@ -356,11 +397,9 @@ static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *da
 
     ret = rb_ary_new();
     size = (nodes) ? nodes->nodeNr : 0;
-    printf("size: %d\n", size);
 
     for (i = 0; i < size; i++) {
         cur = nodes->nodeTab[i];
-        //printf( "checking node: %s type: %d\n", cur->name, cur->type );
 
         chld = ALLOC(fxml_data_t);
         memset( chld, 0, sizeof(chld) );
