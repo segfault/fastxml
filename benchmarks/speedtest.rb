@@ -1,3 +1,4 @@
+[ './ext', '../ext', './lib', '../lib' ].each { |l| $: << l }
 require 'rubygems'
 require 'fastxml'
 require 'hpricot'
@@ -6,7 +7,7 @@ require 'benchmark'
 require 'REXML/document'
 require 'xml/libxml'
 
-test_path = '../test_data/hasno_feed.xml'
+test_path = './test_data/hasno_feed.xml'
 #fraw = open('http://hasno.info/feed/atom.xml') { |f| f.readlines }
 fraw = open( test_path ) { |f| f.readlines }
 ds = fraw.join('')

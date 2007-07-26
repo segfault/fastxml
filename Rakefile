@@ -146,3 +146,7 @@ task :install_gem => [:clean, :package] do
   sh "sudo gem install pkg/*.gem"
 end
 
+desc 'Run Benchmarks'
+task :benchmarks => [ "#{extension}" ] do
+  sh 'ruby ./benchmarks/speedtest.rb'
+end
