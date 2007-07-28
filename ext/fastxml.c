@@ -36,6 +36,7 @@ static VALUE fastxml_doc_root(VALUE self);
 static VALUE fastxml_doc_transform(VALUE self, VALUE xform);
 static VALUE fastxml_doc_stylesheet(VALUE self);
 static VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style);
+static VALUE fastxml_doc_children(VALUE self);
 
 VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath);
 
@@ -48,9 +49,14 @@ static VALUE fastxml_node_innerxml(VALUE self);
 static VALUE fastxml_node_to_s(VALUE self);
 static VALUE fastxml_node_xpath(VALUE self);
 static VALUE fastxml_node_attr(VALUE self, VALUE attr_name);
+static VALUE fastxml_node_children(VALUE self);
+static VALUE fastxml_node_next(VALUE self);
+static VALUE fastxml_node_prev(VALUE self);
+static VALUE fastxml_node_parent(VALUE self);
 
-
+static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur);
 static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data);
+static VALUE fastxml_nodelist_to_obj(xmlNodePtr root);
 
 void Init_fastxml()
 {
@@ -69,6 +75,7 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
 	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
 	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
+	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );
     
     /* Node */
     rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
@@ -81,6 +88,10 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlNode, "inner_xml", fastxml_node_innerxml, 0 );
 	rb_define_method( rb_cFastXmlNode, "xpath", fastxml_node_xpath, 0 );
 	rb_define_method( rb_cFastXmlNode, "attr", fastxml_node_attr, 1 );
+	rb_define_method( rb_cFastXmlNode, "children", fastxml_node_children, 0 );
+	rb_define_method( rb_cFastXmlNode, "next", fastxml_node_next, 0 );	
+	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
+	rb_define_method( rb_cFastXmlNode, "parent", fastxml_node_parent, 0 );	
 }
 
 
@@ -97,15 +108,71 @@ static VALUE fastxml_node_innerxml(VALUE self)
     return Qnil;
 }
 
+static VALUE fastxml_node_next(VALUE self)
+{
+	VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->node == NULL || (data->node != NULL && data->node->next == NULL))
+		return Qnil;
+	
+	return fastxml_raw_node_to_obj( data->node->next );
+}
+
+static VALUE fastxml_node_prev(VALUE self)
+{
+	VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->node == NULL || (data->node != NULL && data->node->prev == NULL))
+		return Qnil;
+	
+	return fastxml_raw_node_to_obj( data->node->prev );
+}
+
+static VALUE fastxml_node_parent(VALUE self)
+{
+	VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->node == NULL || (data->node != NULL && data->node->parent == NULL))
+		return Qnil;
+	
+	return fastxml_raw_node_to_obj( data->node->parent );
+}
+
+static VALUE fastxml_node_children(VALUE self)
+{
+	VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->node == NULL || (data->node != NULL && data->node->children == NULL))
+		return Qnil;
+	
+	return fastxml_nodelist_to_obj( data->node->children );
+}
+
 static VALUE fastxml_node_name(VALUE self)
 {
     VALUE ret, dv;
     fxml_data_t *data;
 
-    dv = rb_iv_get( self, "@lxml_node" );    
+    dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
 
-    if (data->node->name == NULL)
+    if (data->node == NULL || (data->node != NULL && data->node->name == NULL))
         return Qnil;
 
     ret = rb_str_new2( (const char*)data->node->name );
@@ -119,7 +186,7 @@ static VALUE fastxml_node_attr(VALUE self, VALUE attr_name)
 	fxml_data_t *data;
 	xmlChar *raw_ret, *name_str;
 	
-	dv = rb_iv_get( self, "@lxml_node" );
+	dv = rb_iv_get( self, "@lxml_doc" );
 	Data_Get_Struct( dv, fxml_data_t, data );
 	
 	name_str = (xmlChar*)StringValuePtr( attr_name );
@@ -139,7 +206,7 @@ static VALUE fastxml_node_xpath(VALUE self)
 	fxml_data_t *data;
 	xmlChar *raw_ret;
 	
-	dv = rb_iv_get( self, "@lxml_node" );
+	dv = rb_iv_get( self, "@lxml_doc" );
 	Data_Get_Struct( dv, fxml_data_t, data );
 	
 	raw_ret = xmlGetNodePath( data->node );
@@ -160,7 +227,7 @@ static VALUE fastxml_node_value_set(VALUE self, VALUE new_val)
 
 
     val_s = rb_obj_as_string( new_val );
-    dv = rb_iv_get( self, "@lxml_node" );    
+    dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
 
     ents = xmlEncodeEntitiesReentrant( data->doc, (const xmlChar*)StringValuePtr(val_s) );
@@ -179,7 +246,7 @@ static VALUE fastxml_node_value(VALUE self)
     fxml_data_t *data;
 	xmlChar *cont;
 
-    dv = rb_iv_get( self, "@lxml_node" );    
+    dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
 
 	cont = xmlNodeGetContent( data->node );
@@ -198,7 +265,7 @@ static VALUE fastxml_node_to_s(VALUE self)
     fxml_data_t *data;
     xmlBufferPtr buf;
 
-    dv = rb_iv_get( self, "@lxml_node" );
+    dv = rb_iv_get( self, "@lxml_doc" );
     Data_Get_Struct( dv, fxml_data_t, data );
 
     buf = xmlBufferCreate();
@@ -222,6 +289,20 @@ static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
 
 /* {{{ fastxml_doc 
  */
+static VALUE fastxml_doc_children(VALUE self)
+{
+	VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->doc->children == NULL)
+		return Qnil;
+	
+	return fastxml_nodelist_to_obj( data->doc->children );
+}
+
 static VALUE fastxml_doc_stylesheet(VALUE self)
 {
 	return rb_iv_get( self, "@lxml_style" );
@@ -271,148 +352,9 @@ static VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	return ret;
 }
 
-static VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
-{
-	VALUE path_bits = rb_str_split( orig_expr, "/" );
-	VALUE ns_prefix = rb_str_new2( (const char*)root_ns );
-	VALUE ns_indic = rb_str_new2( ":" );
-	VALUE slash = rb_str_new2( "/" );
-	VALUE path_bit, str_idx;
-	VALUE ret_ary = rb_ary_new();
-	long i;
-	
-	rb_str_append( ns_prefix, ns_indic );
-    for (i=0; i<RARRAY(path_bits)->len; i++) {
-        path_bit = RARRAY(path_bits)->ptr[i];
-		
-		if (RSTRING(path_bit)->len > 0) {
-			str_idx = rb_funcall( path_bit, rb_intern( "index" ), 1, ns_indic );
-			if (str_idx == Qnil || str_idx == Qfalse) // didn't find the :, so it looks like we don't have a namespace
-				path_bit = rb_str_plus( ns_prefix, path_bit );
-		}	
-		
-		rb_ary_push( ret_ary, path_bit );
-    }
-	
-	return rb_ary_join( ret_ary, slash );
-}
-
-VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
-{
-    VALUE ret, dv, xpath_s;
-	xmlXPathCompExprPtr xpath_xpr;
-    xmlXPathContextPtr xpath_ctx; 
-    xmlXPathObjectPtr xpath_obj;     
-    fxml_data_t *data;
-    xmlChar *xpath_expr;
-	xmlNodePtr root = NULL;
-	xmlNsPtr *ns_list = NULL;
-	xmlNsPtr *cur_ns = NULL;
-	xmlChar *root_ns = NULL;
-	int ns_cnt = 0;
-
-    if (NIL_P(raw_xpath)) {
-        rb_raise(rb_eArgError, "nil passed as xpath");
-        return Qnil;
-    }
-
-    dv = rb_iv_get( self, "@lxml_doc" );    
-    Data_Get_Struct( dv, fxml_data_t, data ); 
-
-    xpath_ctx = xmlXPathNewContext( data->doc );
-    if (xpath_ctx == NULL) {
-        rb_raise( rb_eRuntimeError, "unable to create xpath context" );
-        return Qnil;
-    }
-
-	root = data->node;
-	if (root == NULL)
-		root = xmlDocGetRootElement( data->doc );
-		
-	xpath_ctx->node = root;
-	ns_list = xmlGetNsList( data->doc, root );
-	while (cur_ns != NULL) { 
-		xmlXPathRegisterNs( xpath_ctx, (*cur_ns)->prefix, (*cur_ns)->href );
-		cur_ns++;
-	}
-	
-	xpath_ctx->namespaces = ns_list;
-	xpath_ctx->nsNr = ns_cnt;
-	
-	xpath_s = rb_obj_as_string( raw_xpath );
-
-
-	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
-		root_ns = (xmlChar*)root->ns->prefix;
-		if (root_ns == NULL) 
-			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; // alternatives? how do other xpath processors handle root/default namespaces?
-
-		xmlXPathRegisterNs( xpath_ctx, root_ns, root->ns->href );
-		// need to update the xpath expression
-		xpath_s = munge_xpath_namespace( xpath_s, root_ns );
-		xpath_ctx->nsNr++;
-	}
-	
-	xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
-	xpath_xpr = xmlXPathCompile( xpath_expr );
-	if (xpath_xpr == NULL) {
-		rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
-		xmlXPathFreeContext( xpath_ctx );
-		xmlFree( ns_list );
-		return Qnil;
-	}
-	
-
-	xpath_obj = xmlXPathCompiledEval( xpath_xpr, xpath_ctx );
-    if(xpath_obj == NULL) {
-        rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
-		xmlXPathFreeCompExpr( xpath_xpr );
-        xmlXPathFreeContext( xpath_ctx ); 
-		xmlFree( ns_list );
-        return Qnil;
-    }    
-
-    ret = fastxml_nodeset_to_obj( xpath_obj, data );
-
-	xmlFree( ns_list );
-	xmlXPathFreeCompExpr( xpath_xpr );
-    xmlXPathFreeObject( xpath_obj );
-    xmlXPathFreeContext( xpath_ctx ); 
-
-    return ret;	
-}
-
 static VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
 {
 	return fastxml_xpath_search( self, raw_xpath );
-}
-
-static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
-{
-    VALUE ret, dv_chld, new_tmp;
-    int size, i;
-    xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-    xmlNodePtr cur;
-    fxml_data_t *chld;
-
-    ret = rb_ary_new();
-    size = (nodes) ? nodes->nodeNr : 0;
-
-    for (i = 0; i < size; i++) {
-        cur = nodes->nodeTab[i];
-
-        chld = ALLOC(fxml_data_t);
-        memset( chld, 0, sizeof(chld) );
-        chld->node = cur;
-        chld->doc = data->doc; 
-
-        new_tmp = rb_class_new_instance( 0, 0, rb_cFastXmlNode ); 
-        dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, chld );
-        rb_iv_set( new_tmp, "@lxml_node", dv_chld );
-        rb_ary_push( ret, new_tmp );
-    }
-
-    return ret;
 }
 
 static VALUE fastxml_doc_to_s(VALUE self)
@@ -444,17 +386,8 @@ static VALUE fastxml_doc_root(VALUE self)
     Data_Get_Struct( dv, fxml_data_t, data );
 
     root = xmlDocGetRootElement( data->doc );
-    
-    chld = ALLOC(fxml_data_t);
-    memset( chld, 0, sizeof(chld) );
-    chld->node = root;
-    chld->doc = data->doc; 
 
-    ret = rb_class_new_instance( 0, 0, rb_cFastXmlNode ); 
-    dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, chld );
-    rb_iv_set( ret, "@lxml_node", dv_chld );
-
-    return ret;
+    return fastxml_raw_node_to_obj( root );
 }
 
 static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
@@ -526,3 +459,156 @@ static VALUE fastxml_data_alloc( VALUE klass )
     //return Data_Wrap_Struct(klass, file_mark, file_free, f);
     return Qnil;
 }
+
+static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
+{
+    VALUE dv_chld, new_tmp;
+    fxml_data_t *chld = ALLOC(fxml_data_t);
+    memset( chld, 0, sizeof(chld) );
+    chld->node = cur;
+    chld->doc = cur->doc; 
+
+    new_tmp = rb_class_new_instance( 0, 0, rb_cFastXmlNode ); 
+    dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, chld );
+    rb_iv_set( new_tmp, "@lxml_doc", dv_chld );	
+	
+	return new_tmp;
+}
+
+static VALUE fastxml_nodelist_to_obj(xmlNodePtr root)
+{
+    VALUE ret, dv_chld, new_tmp;
+    int size, i;
+    xmlNodePtr cur = root;
+
+    ret = rb_ary_new();
+	while (cur != NULL)
+	{        
+        rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
+		cur = cur->next;
+	}
+
+	return ret;
+}
+
+static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
+{
+    VALUE ret;
+    int size, i;
+    xmlNodeSetPtr nodes = xpath_obj->nodesetval;
+    xmlNodePtr cur;
+
+    ret = rb_ary_new();
+    size = (nodes) ? nodes->nodeNr : 0;
+
+    for (i = 0; i < size; i++) {
+        cur = nodes->nodeTab[i];
+        rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
+    }
+
+    return ret;
+}
+
+static VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
+{
+	VALUE path_bits = rb_str_split( orig_expr, "/" );
+	VALUE ns_prefix = rb_str_new2( (const char*)root_ns );
+	VALUE ns_indic = rb_str_new2( ":" );
+	VALUE slash = rb_str_new2( "/" );
+	VALUE path_bit, str_idx;
+	VALUE ret_ary = rb_ary_new();
+	long i;
+	
+	rb_str_append( ns_prefix, ns_indic );
+    for (i=0; i<RARRAY(path_bits)->len; i++) {
+        path_bit = RARRAY(path_bits)->ptr[i];
+		
+		if (RSTRING(path_bit)->len > 0) {
+			str_idx = rb_funcall( path_bit, rb_intern( "index" ), 1, ns_indic );
+			if (str_idx == Qnil || str_idx == Qfalse) // didn't find the :, so it looks like we don't have a namespace
+				path_bit = rb_str_plus( ns_prefix, path_bit );
+		}	
+		
+		rb_ary_push( ret_ary, path_bit );
+    }
+	
+	return rb_ary_join( ret_ary, slash );
+}
+
+VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
+{
+    VALUE ret, dv, xpath_s;
+	xmlXPathCompExprPtr xpath_xpr;
+    xmlXPathContextPtr xpath_ctx; 
+    xmlXPathObjectPtr xpath_obj;     
+    fxml_data_t *data;
+    xmlChar *xpath_expr;
+	xmlNodePtr root = NULL;
+	xmlNsPtr *ns_list = NULL;
+	xmlNsPtr *cur_ns = NULL;
+	xmlChar *root_ns = NULL;
+	int ns_cnt = 0;
+
+    if (NIL_P(raw_xpath)) 
+        rb_raise(rb_eArgError, "nil passed as xpath");
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data ); 
+
+    xpath_ctx = xmlXPathNewContext( data->doc );
+    if (xpath_ctx == NULL) 
+        rb_raise( rb_eRuntimeError, "unable to create xpath context" );
+
+	root = data->node;
+	if (root == NULL)
+		root = xmlDocGetRootElement( data->doc );
+		
+	xpath_ctx->node = root;
+	ns_list = xmlGetNsList( data->doc, root );
+	while (cur_ns != NULL) { 
+		xmlXPathRegisterNs( xpath_ctx, (*cur_ns)->prefix, (*cur_ns)->href );
+		cur_ns++;
+	}
+	
+	xpath_ctx->namespaces = ns_list;
+	xpath_ctx->nsNr = ns_cnt;
+	
+	xpath_s = rb_obj_as_string( raw_xpath );
+	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
+		root_ns = (xmlChar*)root->ns->prefix;
+		if (root_ns == NULL) 
+			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; // alternatives? how do other xpath processors handle root/default namespaces?
+
+		xmlXPathRegisterNs( xpath_ctx, root_ns, root->ns->href );
+		// need to update the xpath expression
+		xpath_s = munge_xpath_namespace( xpath_s, root_ns );
+		xpath_ctx->nsNr++;
+	}
+	
+	xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
+	xpath_xpr = xmlXPathCompile( xpath_expr );
+	if (xpath_xpr == NULL) {
+		xmlXPathFreeContext( xpath_ctx );
+		xmlFree( ns_list );		
+		rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
+	}	
+
+	xpath_obj = xmlXPathCompiledEval( xpath_xpr, xpath_ctx );
+    if(xpath_obj == NULL) {
+        rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
+		xmlXPathFreeCompExpr( xpath_xpr );
+        xmlXPathFreeContext( xpath_ctx ); 
+		xmlFree( ns_list );
+        return Qnil;
+    }    
+
+    ret = fastxml_nodeset_to_obj( xpath_obj, data );
+
+	xmlFree( ns_list );
+	xmlXPathFreeCompExpr( xpath_xpr );
+    xmlXPathFreeObject( xpath_obj );
+    xmlXPathFreeContext( xpath_ctx ); 
+
+    return ret;	
+}
+

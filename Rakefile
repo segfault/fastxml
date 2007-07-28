@@ -147,6 +147,19 @@ task :install_gem => [:clean, :package] do
 end
 
 desc 'Run Benchmarks'
-task :benchmarks => [ "#{extension}" ] do
-  sh 'ruby ./benchmarks/speedtest.rb'
+namespace :bm do
+  desc 'simple speedtest (atom rss)'
+  task :speed => [ "#{extension}" ] do
+    sh 'ruby ./benchmarks/speedtest.rb'
+  end
+
+  desc 'large file test (1MB)'
+  task :largefile => [ "#{extension}" ] do
+    sh 'ruby ./benchmarks/largefile.rb'
+  end
+
+  desc 'unicode file'
+  task :unicode => [ "#{extension}" ] do
+    sh 'ruby ./benchmarks/unicode.rb'
+  end
 end
