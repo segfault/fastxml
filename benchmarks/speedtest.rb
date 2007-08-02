@@ -4,7 +4,7 @@ require 'fastxml'
 require 'hpricot'
 require 'open-uri'
 require 'benchmark'
-require 'REXML/document'
+require 'rexml/document'
 require 'xml/libxml'
 
 test_path = './test_data/hasno_feed.xml'
