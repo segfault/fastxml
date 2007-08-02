@@ -460,11 +460,9 @@ static VALUE fastxml_data_alloc( VALUE klass )
     return Qnil;
 }
 
-static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
+static VALUE fastxml_raw_node_to_my_obj(xmlNodePtr cur, fxml_data_t *chld)
 {
     VALUE dv_chld, new_tmp;
-    fxml_data_t *chld = ALLOC(fxml_data_t);
-    memset( chld, 0, sizeof(chld) );
     chld->node = cur;
     chld->doc = cur->doc; 
 
@@ -472,7 +470,14 @@ static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
     dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, chld );
     rb_iv_set( new_tmp, "@lxml_doc", dv_chld );	
 	
-	return new_tmp;
+	return new_tmp;	
+}
+
+static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
+{
+    fxml_data_t *chld = ALLOC(fxml_data_t);
+    memset( chld, 0, sizeof(chld) );
+	return fastxml_raw_node_to_my_obj( cur, chld );
 }
 
 static VALUE fastxml_nodelist_to_obj(xmlNodePtr root)
@@ -493,13 +498,14 @@ static VALUE fastxml_nodelist_to_obj(xmlNodePtr root)
 
 static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
 {
-    VALUE ret;
+    VALUE ret = rb_ary_new();
     int size, i;
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
     xmlNodePtr cur;
 
-    ret = rb_ary_new();
     size = (nodes) ? nodes->nodeNr : 0;
+    //fxml_data_t *chld = ALLOC(fxml_data_t);
+    //memset( chld, 0, sizeof(chld) );
 
     for (i = 0; i < size; i++) {
         cur = nodes->nodeTab[i];

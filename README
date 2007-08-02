@@ -1,0 +1,9 @@
+= FastXml, a simple fast xml library using libxml and libxslt
+
+== Overview
+
+FastXml is: 
+
+# not standalone, it *requires libxml* and *libxslt*
+# it attempts to provide the speediest xml parsing library available for ruby
+# it provides an hpricot-like syntax for xml parsing and xslt processing

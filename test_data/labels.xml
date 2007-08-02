@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<labels>
+  <label added="2003-06-20">
+    <quote>
+      <!-- Mixed content -->
+      <emph>Midwinter Spring</emph> is its own season&#8230;
+    </quote>
+    <name>Thomas Eliot</name>
+    <address>
+      <street>3 Prufrock Lane</street>
+      <city>Stamford</city>
+      <state>CT</state>
+    </address>
+  </label>
+  <label added="2003-06-10">
+    <name>Ezra Pound</name>
+    <address>
+      <street>45 Usura Place</street>
+      <city>Hailey</city>
+      <state>ID</state>
+    </address>
+  </label>
+</labels>
