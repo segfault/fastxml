@@ -15,6 +15,11 @@
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
 
+#ifndef XML_WITH_TREE
+	#define XML_WITH_TREE 2
+	#define XML_WITH_XPATH 16
+#endif
+
 typedef struct {
     xmlDocPtr doc;
     xmlNodePtr node;
