@@ -60,6 +60,13 @@ static VALUE fastxml_nodelist_to_obj(xmlNodePtr root);
 
 void Init_fastxml()
 {
+    if (xmlHasFeature(XML_WITH_TREE) == 0)
+        rb_raise( rb_eRuntimeError, "libxml not built with tree support" );
+
+    if (xmlHasFeature(XML_WITH_XPATH) == 0)
+        rb_raise( rb_eRuntimeError, "libxml not built with xpath support" );
+
+    xmlInitParser();
     xmlXPathInit();
     VALUE rb_mFastXml = rb_define_module( "FastXml" );
     rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
@@ -341,7 +348,7 @@ static VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	if (xf_data->xslt == NULL)
 		return Qnil;
 
-	ret_doc = (xmlDocPtr)xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
+	ret_doc = xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
 	ret_str = rb_str_new2( "<shouldNeverBeSeen/>" );
 	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc );
 	ret_dv = rb_iv_get( ret, "@lxml_doc" );
@@ -395,6 +402,9 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
     VALUE data_s, dv;
     char *cstr;
     fxml_data_t *data;
+    int parser_opts = XML_PARSE_NOERROR & XML_PARSE_NOWARNING;
+    int parse_dtd = XML_PARSE_DTDLOAD & XML_PARSE_DTDATTR & XML_PARSE_DTDVALID;
+    int parse_forgiving = XML_PARSE_RECOVER;
 
     if (NIL_P(xml_doc_str)) {
         rb_raise(rb_eArgError, "nil passed as xml document");
@@ -405,21 +415,17 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
     data_s = rb_obj_as_string( xml_doc_str );
     rb_iv_set( self, "@raw_data", data_s );
 
-    cstr = StringValuePtr( data_s );
-    //printf( "cstr: %s\n", cstr );
-
-    xmlInitParser();
     data = ALLOC(fxml_data_t);
-    memset( data, 0, sizeof(data) );
+    memset( data, (int)NULL, sizeof(fxml_data_t) );
 
-    data->doc = xmlReadMemory( cstr, RSTRING(data_s)->len, "noname.xml", NULL, 0 );
+    data->doc = xmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len, 
+                               "noname.xml", NULL, parser_opts );
+    // if we're mallformed we might want to use xmlRecoverMemcory(char*, int)
     if (data->doc == NULL) {
         rb_raise( rb_eRuntimeError, "Failed to parse document" );
 	    return Qnil;
     }
     
-    xmlCleanupParser();
-
     dv = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, data );
     rb_iv_set(self, "@lxml_doc", dv );
 
@@ -437,14 +443,11 @@ static void fastxml_data_mark( fxml_data_t *data )
 
 static void fastxml_data_free( fxml_data_t *data )
 {
-    //printf("attempting to free\n");
     if (data != NULL)
     {
         if (data->doc != NULL && data->node == NULL)
             xmlFreeDoc( data->doc );
 
-//        if (data->node != NULL)
-//            xmlFreeNode( data->node );
         // the doc free will cleanup the nodes
 
         data->doc = NULL;
@@ -476,7 +479,7 @@ static VALUE fastxml_raw_node_to_my_obj(xmlNodePtr cur, fxml_data_t *chld)
 static VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
 {
     fxml_data_t *chld = ALLOC(fxml_data_t);
-    memset( chld, 0, sizeof(chld) );
+    memset( chld, (int)NULL, sizeof(fxml_data_t) );
 	return fastxml_raw_node_to_my_obj( cur, chld );
 }
 
@@ -502,10 +505,9 @@ static VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *da
     int size, i;
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
     xmlNodePtr cur;
+    fxml_data_t **chld = NULL;
 
     size = (nodes) ? nodes->nodeNr : 0;
-    //fxml_data_t *chld = ALLOC(fxml_data_t);
-    //memset( chld, 0, sizeof(chld) );
 
     for (i = 0; i < size; i++) {
         cur = nodes->nodeTab[i];
@@ -570,20 +572,23 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 		root = xmlDocGetRootElement( data->doc );
 		
 	xpath_ctx->node = root;
-	ns_list = xmlGetNsList( data->doc, root );
-	while (cur_ns != NULL) { 
+	cur_ns = ns_list = xmlGetNsList( data->doc, root );
+	while (cur_ns != NULL && (*cur_ns) != NULL) { 
 		xmlXPathRegisterNs( xpath_ctx, (*cur_ns)->prefix, (*cur_ns)->href );
 		cur_ns++;
 	}
-	
-	xpath_ctx->namespaces = ns_list;
-	xpath_ctx->nsNr = ns_cnt;
+
+    if (ns_list != NULL) {
+	    xpath_ctx->namespaces = ns_list;
+	    xpath_ctx->nsNr = ns_cnt;
+    }
 	
 	xpath_s = rb_obj_as_string( raw_xpath );
 	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
-		root_ns = (xmlChar*)root->ns->prefix;
+		root_ns = root->ns->prefix;
 		if (root_ns == NULL) 
-			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; // alternatives? how do other xpath processors handle root/default namespaces?
+			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; 
+            // alternatives? how do other xpath processors handle root/default namespaces?
 
 		xmlXPathRegisterNs( xpath_ctx, root_ns, root->ns->href );
 		// need to update the xpath expression
@@ -591,7 +596,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 		xpath_ctx->nsNr++;
 	}
 	
-	xpath_expr = (xmlChar*)StringValuePtr( xpath_s );
+	xpath_expr = (xmlChar*)RSTRING(xpath_s)->ptr;
 	xpath_xpr = xmlXPathCompile( xpath_expr );
 	if (xpath_xpr == NULL) {
 		xmlXPathFreeContext( xpath_ctx );
