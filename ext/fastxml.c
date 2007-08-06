@@ -74,12 +74,12 @@ void Init_fastxml()
     xmlInitParser();
     xmlXPathInit();
     VALUE rb_mFastXml = rb_define_module( "FastXml" );
-    rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
+    //rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
     rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
     rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
 
     /* Doc */
-    rb_include_module( rb_cFastXmlDoc, rb_mEnumerable );
+    //rb_include_module( rb_cFastXmlDoc, rb_mEnumerable );
     rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, 1 );
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
@@ -90,7 +90,7 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );
     
     /* Node */
-    rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
+    //rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
     rb_define_method( rb_cFastXmlNode, "initialize", fastxml_node_initialize, 0 );
     rb_define_method( rb_cFastXmlNode, "search", fastxml_node_search, 1 );
     rb_define_method( rb_cFastXmlNode, "to_s", fastxml_node_to_s, 0 );
@@ -104,6 +104,8 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlNode, "next", fastxml_node_next, 0 );	
 	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
 	rb_define_method( rb_cFastXmlNode, "parent", fastxml_node_parent, 0 );	
+	
+	rb_require( "lib/fastxml_lib" );
 }
 
 
