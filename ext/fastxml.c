@@ -303,6 +303,7 @@ static VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
 
 /* {{{ fastxml_doc 
  */
+
 static VALUE fastxml_doc_children(VALUE self)
 {
 	VALUE dv;
@@ -409,8 +410,8 @@ static VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
     VALUE data_s, dv;
     char *cstr;
     fxml_data_t *data;
-    int parser_opts = XML_PARSE_NOERROR & XML_PARSE_NOWARNING;
-    int parse_dtd = XML_PARSE_DTDLOAD & XML_PARSE_DTDATTR & XML_PARSE_DTDVALID;
+    int parser_opts = XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
+    int parse_dtd = XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;
     int parse_forgiving = XML_PARSE_RECOVER;
 
     if (NIL_P(xml_doc_str)) {
