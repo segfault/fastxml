@@ -39,6 +39,7 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
 	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
 	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );
+    rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
     
     /* Node */
     //rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
@@ -55,6 +56,7 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlNode, "next", fastxml_node_next, 0 );	
 	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
 	rb_define_method( rb_cFastXmlNode, "parent", fastxml_node_parent, 0 );	
+    rb_define_method( rb_cFastXmlNode, "inspect", fastxml_node_inspect, 0 );
 	
 	rb_require( "lib/fastxml_lib" );
 }
@@ -212,7 +214,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 	
 	xpath_s = rb_obj_as_string( raw_xpath );
 	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
-		root_ns = root->ns->prefix;
+		root_ns = (xmlChar*)root->ns->prefix;
 		if (root_ns == NULL) 
 			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; 
             // alternatives? how do other xpath processors handle root/default namespaces?

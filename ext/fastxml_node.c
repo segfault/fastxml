@@ -7,6 +7,23 @@
 /* {{{ fastxml_node 
  */
 
+VALUE fastxml_node_inspect(VALUE self)
+{
+    VALUE dv;
+    VALUE *argv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+    argv = ALLOCA_N( VALUE, 4 );
+    argv[0] = rb_str_new2( "#<%s:0x%x %s>" );
+    argv[1] = CLASS_OF( self );
+    argv[2] = rb_obj_id( self );
+    argv[3] = rb_str_new2( (char*) data->node->name );
+    return( rb_f_sprintf( 4, argv ) );
+}
+
 VALUE fastxml_node_initialize(VALUE self)
 {
     return Qnil;

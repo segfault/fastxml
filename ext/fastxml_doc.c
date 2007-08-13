@@ -6,6 +6,17 @@
 
 /* {{{ fastxml_doc 
  */
+VALUE fastxml_doc_inspect(VALUE self)
+{
+    VALUE *argv;
+    argv = ALLOCA_N( VALUE, 3 );
+    //argv[0] = rb_str_new2("#<%s:0x%x %s=\"%s\">");
+    argv[0] = rb_str_new2( "#<%s:0x%x>" );
+    argv[1] = CLASS_OF( self );
+    argv[2] = rb_obj_id( self );
+    //argv[4] = rb_str_new2((char *)prbxs_domelement->node->name);
+    return( rb_f_sprintf( 3, argv ) );
+}
 
 VALUE fastxml_doc_children(VALUE self)
 {
@@ -59,7 +70,7 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	if (xf_data->xslt == NULL)
 		return Qnil;
 
-	ret_doc = xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
+	ret_doc = (xmlDocPtr)xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
 	ret_str = rb_str_new2( "<shouldNeverBeSeen/>" );
 	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc );
 	ret_dv = rb_iv_get( ret, "@lxml_doc" );

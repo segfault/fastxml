@@ -15,4 +15,5 @@ extern VALUE fastxml_node_children(VALUE self);
 extern VALUE fastxml_node_next(VALUE self);
 extern VALUE fastxml_node_prev(VALUE self);
 extern VALUE fastxml_node_parent(VALUE self);
+extern VALUE fastxml_node_inspect(VALUE self);
 #endif

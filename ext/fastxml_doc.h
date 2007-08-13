@@ -12,4 +12,5 @@ extern VALUE fastxml_doc_transform(VALUE self, VALUE xform);
 extern VALUE fastxml_doc_stylesheet(VALUE self);
 extern VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style);
 extern VALUE fastxml_doc_children(VALUE self);
+extern VALUE fastxml_doc_inspect(VALUE self);
 #endif
