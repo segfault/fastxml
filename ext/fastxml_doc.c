@@ -2,6 +2,8 @@
  *  $Id$
  */
 #include "fastxml.h"
+#include "fastxml_node.h"
+#include "fastxml_doc.h"
 
 
 /* {{{ fastxml_doc 
@@ -10,12 +12,11 @@ VALUE fastxml_doc_inspect(VALUE self)
 {
     VALUE *argv;
     argv = ALLOCA_N( VALUE, 3 );
-    //argv[0] = rb_str_new2("#<%s:0x%x %s=\"%s\">");
     argv[0] = rb_str_new2( "#<%s:0x%x>" );
     argv[1] = CLASS_OF( self );
     argv[2] = rb_obj_id( self );
-    //argv[4] = rb_str_new2((char *)prbxs_domelement->node->name);
-    return( rb_f_sprintf( 3, argv ) );
+
+    return rb_f_sprintf( 3, argv );
 }
 
 VALUE fastxml_doc_children(VALUE self)
@@ -39,9 +40,8 @@ VALUE fastxml_doc_stylesheet(VALUE self)
 
 VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style)
 {
-	VALUE ret, dv, data_s, xslt_doc;
+	VALUE dv, xslt_doc;
 	fxml_data_t *data;
-	char *cstr;		
 
     xslt_doc = rb_class_new_instance(1, &style, rb_cFastXmlDoc );
 	
@@ -106,9 +106,8 @@ VALUE fastxml_doc_to_s(VALUE self)
 
 VALUE fastxml_doc_root(VALUE self)
 {
-    VALUE ret, dv, dv_chld;
+    VALUE dv;
     fxml_data_t *data;
-    fxml_data_t *chld;
     xmlNodePtr root;
 
     dv = rb_iv_get( self, "@lxml_doc" );
@@ -122,7 +121,6 @@ VALUE fastxml_doc_root(VALUE self)
 VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
 {
     VALUE data_s, dv;
-    char *cstr;
     fxml_data_t *data;
     int parser_opts = XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
     int parse_dtd = XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;

@@ -3,6 +3,8 @@
  */
 
 #include "fastxml.h"
+#include "fastxml_node.h"
+#include "fastxml_doc.h"
 
 /* {{{ fastxml_node 
  */
@@ -21,12 +23,12 @@ VALUE fastxml_node_inspect(VALUE self)
     argv[1] = CLASS_OF( self );
     argv[2] = rb_obj_id( self );
     argv[3] = rb_str_new2( (char*) data->node->name );
-    return( rb_f_sprintf( 4, argv ) );
+    return rb_f_sprintf( 4, argv );
 }
 
 VALUE fastxml_node_initialize(VALUE self)
 {
-    return Qnil;
+    return self;
 }
 
 VALUE fastxml_node_innerxml(VALUE self)

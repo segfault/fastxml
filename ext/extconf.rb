@@ -8,6 +8,6 @@ have_library( 'xml2', 'xmlInitParser', 'libxml/parser.h' )
 find_library( 'xslt', "xmlInitParser", "/usr/lib", "/usr/local/lib", "/opt/local/lib" )
 have_library( 'xslt', 'xsltParseStylesheetFile', 'libxslt/xslt.h' )
 $LDFLAGS << ' %s' % (`xml2-config --libs`).chomp
-$CFLAGS << ' %s' % (`xml2-config --cflags`).chomp 
+$CFLAGS << ' -Wall %s' % (`xml2-config --cflags`).chomp 
 
 create_makefile ext_name

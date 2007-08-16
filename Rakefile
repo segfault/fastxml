@@ -28,8 +28,7 @@ ext_files = FileList[
 ]
 
 
-CLEAN.include ["#{ext_so}", 'ext/hpricot_scan/Makefile', 
-                '*.gem']
+CLEAN.include ["#{ext_so}", '*.gem']
              
 # Many of these tasks were garnered from zenspider's Hoe
 # just forced to work my way

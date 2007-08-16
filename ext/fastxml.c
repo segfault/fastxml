@@ -6,12 +6,8 @@
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
 
-
-VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath);
-VALUE fastxml_raw_node_to_obj(xmlNodePtr cur);
-VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data);
-VALUE fastxml_nodelist_to_obj(xmlNodePtr root);
-
+VALUE rb_cFastXmlDoc;
+VALUE rb_cFastXmlNode;
 
 
 void Init_fastxml()
@@ -108,23 +104,22 @@ VALUE fastxml_raw_node_to_my_obj(xmlNodePtr cur, fxml_data_t *chld)
 VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
 {
     fxml_data_t *chld = ALLOC(fxml_data_t);
-    memset( chld, (int)NULL, sizeof(fxml_data_t) );
+    memset( chld, 0, sizeof(fxml_data_t) );
 	return fastxml_raw_node_to_my_obj( cur, chld );
 }
 
 VALUE fastxml_nodelist_to_obj(xmlNodePtr root)
 {
-    VALUE ret, dv_chld, new_tmp;
-    int size, i;
+    VALUE ret;
     xmlNodePtr cur = root;
 
     ret = rb_ary_new();
-	while (cur != NULL)
+    while (cur != NULL)
 	{        
         rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
 		cur = cur->next;
 	}
-
+   
 	return ret;
 }
 
@@ -134,7 +129,6 @@ VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
     int size, i;
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
     xmlNodePtr cur;
-    fxml_data_t **chld = NULL;
 
     size = (nodes) ? nodes->nodeNr : 0;
 
