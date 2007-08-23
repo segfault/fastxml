@@ -74,7 +74,7 @@ file ext_so => ext_files do
 end
 
 desc "Task for cruise Control"
-task :cruise => ["#{extension}","spec"] do
+task :cruise => ["clean", "#{extension}", "spec"] do
   out = ENV['CC_BUILD_ARTIFACTS']
   system "mv coverage #{out}" if out
 end
