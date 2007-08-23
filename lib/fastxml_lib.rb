@@ -38,6 +38,12 @@ class FastXml::Node
   end
 end
 
+class FastXml::NodeList
+  def [](idx)
+    self.entry(idx)    
+  end
+end
+
 
 def FastXml(data=nil, opts = {}, &blk)
   FastXml::Doc.new data

@@ -5,9 +5,11 @@
 #include "fastxml.h"
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
+#include "fastxml_nodelist.h"
 
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;
+VALUE rb_cFastXmlNodeList;
 
 
 void Init_fastxml()
@@ -24,6 +26,7 @@ void Init_fastxml()
     //rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
     rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
     rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
+    rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
 
     /* Doc */
     //rb_include_module( rb_cFastXmlDoc, rb_mEnumerable );
@@ -53,10 +56,17 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
 	rb_define_method( rb_cFastXmlNode, "parent", fastxml_node_parent, 0 );	
     rb_define_method( rb_cFastXmlNode, "inspect", fastxml_node_inspect, 0 );
+
+	/* NodeList */
+    rb_include_module( rb_cFastXmlNodeList, rb_mEnumerable );	
+    rb_define_method( rb_cFastXmlNodeList, "initialize", fastxml_nodelist_initialize, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "length", fastxml_nodelist_length, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "each", fastxml_nodelist_each, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "entry", fastxml_nodelist_entry, 1 );
 	
 	rb_require( "lib/fastxml_lib" );
-}
 
+}
 
 
 
@@ -73,8 +83,12 @@ void fastxml_data_free( fxml_data_t *data )
         if (data->doc != NULL && data->node == NULL)
             xmlFreeDoc( data->doc );
 
+		if (data->list != NULL && data->listType == 0) {
+			xmlFreeNodeList( data->list );
+		}
         // the doc free will cleanup the nodes
 
+		data->list = NULL;
         data->doc = NULL;
         data->node = NULL;
         free(data);
@@ -108,36 +122,36 @@ VALUE fastxml_raw_node_to_obj(xmlNodePtr cur)
 	return fastxml_raw_node_to_my_obj( cur, chld );
 }
 
-VALUE fastxml_nodelist_to_obj(xmlNodePtr root)
+VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len)
 {
-    VALUE ret;
+    VALUE ret, dv_chld;
     xmlNodePtr cur = root;
+	fxml_data_t *ndlst = ALLOC(fxml_data_t);
+	memset( ndlst, 0, sizeof(fxml_data_t) );
+	
+	ndlst->listType = len == -1 ? 1 : 0;
+	ndlst->listLen = len;
+	ndlst->list = cur;
+	ret = rb_class_new_instance( 0, 0, rb_cFastXmlNodeList ); 
+    dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, ndlst );
+    rb_iv_set( ret, "@lxml_doc", dv_chld );
 
-    ret = rb_ary_new();
+    /*ret = rb_ary_new();
     while (cur != NULL)
 	{        
         rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
 		cur = cur->next;
-	}
+	}*/
    
 	return ret;
 }
 
 VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
 {
-    VALUE ret = rb_ary_new();
-    int size, i;
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-    xmlNodePtr cur;
+    xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
 
-    size = (nodes) ? nodes->nodeNr : 0;
-
-    for (i = 0; i < size; i++) {
-        cur = nodes->nodeTab[i];
-        rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
-    }
-
-    return ret;
+	return fastxml_nodelist_to_obj( list, (nodes) ? nodes->nodeNr : 0 );
 }
 
 VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )

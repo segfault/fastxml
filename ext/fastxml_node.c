@@ -5,6 +5,7 @@
 #include "fastxml.h"
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
+#include "fastxml_nodelist.h"
 
 /* {{{ fastxml_node 
  */
@@ -89,7 +90,7 @@ VALUE fastxml_node_children(VALUE self)
 	if (data->node == NULL || (data->node != NULL && data->node->children == NULL))
 		return Qnil;
 	
-	return fastxml_nodelist_to_obj( data->node->children );
+	return fastxml_nodelist_to_obj( data->node->children, -1 );
 }
 
 VALUE fastxml_node_name(VALUE self)

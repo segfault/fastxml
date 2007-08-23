@@ -4,6 +4,7 @@
 #include "fastxml.h"
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
+#include "fastxml_nodelist.h"
 
 
 /* {{{ fastxml_doc 
@@ -30,7 +31,7 @@ VALUE fastxml_doc_children(VALUE self)
 	if (data->doc->children == NULL)
 		return Qnil;
 	
-	return fastxml_nodelist_to_obj( data->doc->children );
+	return fastxml_nodelist_to_obj( data->doc->children, -1 );
 }
 
 VALUE fastxml_doc_stylesheet(VALUE self)
