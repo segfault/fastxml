@@ -14,7 +14,13 @@ describe FastXml::Doc, " functionality" do
   end
 
   it 'should have a root node accessor' do
+    @doc.should respond_to( :root )
     @doc.root.should_not be_nil
+  end
+  
+  it 'should have a children accessor' do
+    @doc.should respond_to( :children )
+    @doc.children.should_not be_nil
   end
 
   #it 'should be able to run namespaced xpath searches' do
@@ -22,7 +28,19 @@ describe FastXml::Doc, " functionality" do
   #end
   
   it 'should be able to run default namespace xpath searches' do
+    @doc.should respond_to( :search )
     @doc.search( '/feed/entry' ).length.should > 1
+  end
+  
+  it 'should allow hpricot-style searching using the / operator' do
+    @doc.should respond_to( '/' )
+    (@doc/"feed/entry").length.should > 1
+    (@doc/"feed/entry").length.should == @doc.search( '/feed/entry' ).length
+  end
+
+  it 'should provide a to_s method' do
+    @doc.should respond_to( :to_s )
+    @doc.to_s.should_not be_nil
   end
 
 end
