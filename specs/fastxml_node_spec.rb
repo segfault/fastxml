@@ -43,4 +43,39 @@ describe FastXml::Node, ' functionality' do
     @node.should respond_to( :to_s )
     @node.to_s.should_not be_nil
   end
+  
+  it 'should provide an inspect method' do
+    @node.should respond_to( :inspect )
+    @node.inspect.should_not be_nil
+  end  
+  
+  it 'should provide an attribute accessor method named attr' do
+    @node.should respond_to( :attr )
+  end
+  
+  it 'should provide a next method' do
+    @node.should respond_to( :next )
+    @node.next.should_not be_nil
+  end
+  
+  it 'should provide a prev method' do
+    @node.should respond_to( :prev )
+    @node.prev.should be_nil
+    @node.next.prev.should_not be_nil
+  end
+  
+  it 'should provide an xpath method returning the xpath to the node' do
+    @node.should respond_to( :xpath )
+    @node.xpath.should_not be_nil
+  end
+  
+  it 'should provide a parent method' do
+    @node.should respond_to( :parent )
+    @node.parent.should_not be_nil
+  end
+  
+  it 'should provide an inner_xml method' do
+    @node.should respond_to( :inner_xml )
+    @node.inner_xml.should_not be_nil
+  end
 end

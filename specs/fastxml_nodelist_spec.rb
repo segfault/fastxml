@@ -36,4 +36,9 @@ describe FastXml::NodeList, ' functionality' do
     end
     @list.length.should == cnt
   end
+  
+  it 'should provide an inspect method' do
+    @list.should respond_to( :inspect )
+    @list.inspect.should_not be_nil
+  end
 end

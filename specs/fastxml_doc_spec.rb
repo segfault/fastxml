@@ -43,4 +43,8 @@ describe FastXml::Doc, " functionality" do
     @doc.to_s.should_not be_nil
   end
 
+  it 'should provide an inspect method' do
+    @node.should respond_to( :inspect )
+    @node.inspect.should_not be_nil
+  end
 end
