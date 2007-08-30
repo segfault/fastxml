@@ -55,13 +55,15 @@ describe FastXml::Node, ' functionality' do
   
   it 'should provide a next method' do
     @node.should respond_to( :next )
-    @node.next.should_not be_nil
+    first_chld = @node.children.first
+    first_chld.next.should_not be_nil
   end
   
   it 'should provide a prev method' do
     @node.should respond_to( :prev )
-    @node.prev.should be_nil
-    @node.next.prev.should_not be_nil
+    first_chld = @node.children.first    
+    first_chld.prev.should be_nil
+    first_chld.next.prev.should_not be_nil
   end
   
   it 'should provide an xpath method returning the xpath to the node' do
@@ -85,6 +87,6 @@ describe FastXml::Node, ' functionality' do
   
   it 'should provide an at method' do
     @node.should respond_to( :at )
-    @node.at( "feed" ).should_not be_nil
+    @node.at( "entry" ).should_not be_nil
   end  
 end

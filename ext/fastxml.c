@@ -147,9 +147,7 @@ VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len)
 VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
 {
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-	xmlNodePtr list = xmlCopyNodeList( nodes->nodeTab );
-    //xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
-
+    xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
 
 	return fastxml_nodelist_to_obj( list, (nodes) ? nodes->nodeNr : 0 );
 }

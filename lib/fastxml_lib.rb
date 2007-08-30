@@ -48,6 +48,14 @@ class FastXml::NodeList
   def [](idx)
     self.entry(idx)    
   end
+  
+  def first
+    self.entry(0)
+  end
+  
+  def last
+    self.entry(-1)
+  end
 end
 
 

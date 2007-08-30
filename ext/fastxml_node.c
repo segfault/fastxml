@@ -34,12 +34,23 @@ VALUE fastxml_node_initialize(VALUE self)
 
 VALUE fastxml_node_innerxml(VALUE self)
 {
-    return Qnil;
+	VALUE dv, ret;
+    fxml_data_t *data;
+	xmlBufferPtr buf = xmlBufferCreate();
+
+    dv = rb_iv_get( self, "@lxml_doc" );    
+    Data_Get_Struct( dv, fxml_data_t, data );
+	
+	xmlNodeDump( buf, data->doc, data->node, 0, 0 );
+	ret = rb_str_new2( (char*)xmlBufferContent( buf ) );
+	xmlBufferFree( buf );	
+	
+    return ret;
 }
 
 VALUE fastxml_node_next(VALUE self)
 {
-	VALUE dv;
+	VALUE dv, next;
     fxml_data_t *data;
 
     dv = rb_iv_get( self, "@lxml_doc" );    
@@ -47,13 +58,19 @@ VALUE fastxml_node_next(VALUE self)
 
 	if (data->node == NULL || (data->node != NULL && data->node->next == NULL))
 		return Qnil;
+		
+	next = rb_iv_get( self, "@next" );
+	if (next == Qnil) {
+		next = fastxml_raw_node_to_obj( data->node->next );
+		rb_iv_set( self, "@next", next );
+	}
 	
-	return fastxml_raw_node_to_obj( data->node->next );
+	return next;
 }
 
 VALUE fastxml_node_prev(VALUE self)
 {
-	VALUE dv;
+	VALUE dv, prev;
     fxml_data_t *data;
 
     dv = rb_iv_get( self, "@lxml_doc" );    
@@ -61,8 +78,14 @@ VALUE fastxml_node_prev(VALUE self)
 
 	if (data->node == NULL || (data->node != NULL && data->node->prev == NULL))
 		return Qnil;
+		
+	prev = rb_iv_get( self, "@prev" );
+	if (prev == Qnil) {
+		prev = fastxml_raw_node_to_obj( data->node->prev );
+		rb_iv_set( self, "@prev", prev );
+	}		
 	
-	return fastxml_raw_node_to_obj( data->node->prev );
+	return prev;
 }
 
 VALUE fastxml_node_parent(VALUE self)

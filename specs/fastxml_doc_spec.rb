@@ -54,6 +54,6 @@ describe FastXml::Doc, " functionality" do
   
   it 'should provide an at method' do
     @doc.should respond_to( :at )
-    @doc.at( "feed" ).should_not be_nil
+    @doc.at( "/feed" ).should_not be_nil
   end
 end
