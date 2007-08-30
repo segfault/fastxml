@@ -44,7 +44,16 @@ describe FastXml::Doc, " functionality" do
   end
 
   it 'should provide an inspect method' do
-    @node.should respond_to( :inspect )
-    @node.inspect.should_not be_nil
+    @doc.should respond_to( :inspect )
+    @doc.inspect.should_not be_nil
+  end
+  
+  it 'should provide a children_of_type method' do
+    @doc.should respond_to( :children_of_type )
+  end  
+  
+  it 'should provide an at method' do
+    @doc.should respond_to( :at )
+    @doc.at( "feed" ).should_not be_nil
   end
 end

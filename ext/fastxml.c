@@ -29,7 +29,6 @@ void Init_fastxml()
     rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
 
     /* Doc */
-    //rb_include_module( rb_cFastXmlDoc, rb_mEnumerable );
     rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, 1 );
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
@@ -41,7 +40,6 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
     
     /* Node */
-    //rb_include_module( rb_cFastXmlNode, rb_mEnumerable );
     rb_define_method( rb_cFastXmlNode, "initialize", fastxml_node_initialize, 0 );
     rb_define_method( rb_cFastXmlNode, "search", fastxml_node_search, 1 );
     rb_define_method( rb_cFastXmlNode, "to_s", fastxml_node_to_s, 0 );
@@ -149,7 +147,9 @@ VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len)
 VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
 {
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-    xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
+	xmlNodePtr list = xmlCopyNodeList( nodes->nodeTab );
+    //xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
+
 
 	return fastxml_nodelist_to_obj( list, (nodes) ? nodes->nodeNr : 0 );
 }

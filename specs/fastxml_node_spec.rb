@@ -78,4 +78,13 @@ describe FastXml::Node, ' functionality' do
     @node.should respond_to( :inner_xml )
     @node.inner_xml.should_not be_nil
   end
+  
+  it 'should provide a children_of_type method' do
+    @node.should respond_to( :children_of_type )
+  end  
+  
+  it 'should provide an at method' do
+    @node.should respond_to( :at )
+    @node.at( "feed" ).should_not be_nil
+  end  
 end

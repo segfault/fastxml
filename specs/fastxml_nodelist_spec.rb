@@ -41,4 +41,6 @@ describe FastXml::NodeList, ' functionality' do
     @list.should respond_to( :inspect )
     @list.inspect.should_not be_nil
   end
+  
+
 end

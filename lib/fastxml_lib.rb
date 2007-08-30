@@ -16,6 +16,12 @@ module FastXml::Common
     self.search( "/#{xpath.to_s}" )
   end
   
+  def at(xpath)
+    nodes = self.search( xpath )
+    return nil unless nodes && nodes.length > 0
+    nodes[0]
+  end
+  
   alias :to_s :display
 end
 
