@@ -147,7 +147,7 @@ VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len)
 VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
 {
     xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-    xmlNodePtr list = xmlDocCopyNodeList( data->doc, nodes->nodeTab );
+    xmlNodePtr list = nodes->nodeTab;
 
 	return fastxml_nodelist_to_obj( list, (nodes) ? nodes->nodeNr : 0 );
 }
@@ -252,7 +252,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 
 	xmlFree( ns_list );
 	xmlXPathFreeCompExpr( xpath_xpr );
-    xmlXPathFreeObject( xpath_obj );
+    //xmlXPathFreeObject( xpath_obj );
     xmlXPathFreeContext( xpath_ctx ); 
 
     return ret;	
