@@ -10,7 +10,8 @@
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;
 VALUE rb_cFastXmlNodeList;
-
+ID s_readlines;
+ID s_to_s;
 
 void Init_fastxml()
 {
@@ -20,10 +21,13 @@ void Init_fastxml()
     if (xmlHasFeature(XML_WITH_XPATH) == 0)
         rb_raise( rb_eRuntimeError, "libxml not built with xpath support" );
 
+	s_readlines = rb_intern("readlines");
+	s_to_s = rb_intern("to_s");
+
     xmlInitParser();
     xmlXPathInit();
     VALUE rb_mFastXml = rb_define_module( "FastXml" );
-    //rb_define_const( rb_mFastXml, "VERSION", rb_str_new2( "0.1" ) );
+    rb_define_const( rb_mFastXml, "LIBXML_VERSION", rb_str_new2( LIBXML_DOTTED_VERSION ) );
     rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
     rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
     rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
@@ -61,6 +65,7 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlNodeList, "length", fastxml_nodelist_length, 0 );
     rb_define_method( rb_cFastXmlNodeList, "each", fastxml_nodelist_each, 0 );
     rb_define_method( rb_cFastXmlNodeList, "entry", fastxml_nodelist_entry, 1 );
+	rb_define_method( rb_cFastXmlNodeList, "to_ary", fastxml_nodelist_entry, 0 );
 	
 	rb_require( "lib/fastxml_lib" );
 
@@ -177,7 +182,7 @@ VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
 	return rb_ary_join( ret_ary, slash );
 }
 
-VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
+VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk)
 {
     VALUE ret, dv, xpath_s;
 	xmlXPathCompExprPtr xpath_xpr;

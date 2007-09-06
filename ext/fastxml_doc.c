@@ -13,11 +13,12 @@ VALUE fastxml_doc_inspect(VALUE self)
 {
     VALUE *argv;
     argv = ALLOCA_N( VALUE, 3 );
-    argv[0] = rb_str_new2( "#<%s:0x%x>" );
+    argv[0] = rb_str_new2( "#<%s:0x%x %s>" );
     argv[1] = CLASS_OF( self );
     argv[2] = rb_obj_id( self );
+	argv[3] = fastxml_doc_to_s( self );
 
-    return rb_f_sprintf( 3, argv );
+    return rb_f_sprintf( 4, argv );
 }
 
 VALUE fastxml_doc_children(VALUE self)
@@ -82,9 +83,9 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	return ret;
 }
 
-VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath)
+VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath, VALUE blk)
 {
-	return fastxml_xpath_search( self, raw_xpath );
+	return fastxml_xpath_search( self, raw_xpath, blk );
 }
 
 VALUE fastxml_doc_to_s(VALUE self)
@@ -121,7 +122,7 @@ VALUE fastxml_doc_root(VALUE self)
 
 VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
 {
-    VALUE data_s, dv;
+    VALUE data_s, dv, lines;
     fxml_data_t *data;
     int parser_opts = XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
     int parse_dtd = XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;
@@ -132,9 +133,14 @@ VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
         return Qnil;
     }
 
-
-    data_s = rb_obj_as_string( xml_doc_str );
-    rb_iv_set( self, "@raw_data", data_s );
+	if (rb_respond_to( xml_doc_str, s_readlines )) {
+		lines = rb_funcall( xml_doc_str, s_readlines, 0 );
+		data_s = rb_funcall( lines, s_to_s, 0 );
+	}
+	else
+    	data_s = rb_obj_as_string( xml_doc_str );
+    
+	rb_iv_set( self, "@raw_data", data_s );
 
     data = ALLOC(fxml_data_t);
     memset( data, (int)NULL, sizeof(fxml_data_t) );

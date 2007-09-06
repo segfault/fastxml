@@ -33,5 +33,16 @@ describe FastXml::Doc, " when created" do
     doc.should_not be_nil
     doc.to_s.should_not be_nil
   end
+  
+  it 'should be able to parse large files' do
+    raw_data = open( "./test_data/xslspec.xml" ).readlines.join('')
+    doc = FastXml( raw_data )
+    doc.should_not be_nil
+    doc.to_s.should_not be_nil
+    doc.to_s.length.should >= 1584496
+    doc.root.should_not be_nil
+    (doc/"").should_not be_nil
+    doc.root.children.should_not be_nil
+  end
 
 end

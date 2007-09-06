@@ -229,9 +229,9 @@ VALUE fastxml_node_to_s(VALUE self)
     return ret;
 }
 
-VALUE fastxml_node_search(VALUE self, VALUE raw_xpath)
+VALUE fastxml_node_search(VALUE self, VALUE raw_xpath, VALUE blk)
 {
-    return fastxml_xpath_search( self, raw_xpath );
+    return fastxml_xpath_search( self, raw_xpath, blk );
 }
 
 

@@ -35,6 +35,10 @@ class FastXml::Doc
   def doctype?
     nil
   end
+  
+  def xpath
+    "/"
+  end
 end
 
 class FastXml::Node
@@ -46,7 +50,7 @@ end
 
 class FastXml::NodeList
   def [](idx)
-    self.entry(idx)    
+    self.entry(idx)
   end
   
   def first
@@ -59,6 +63,13 @@ class FastXml::NodeList
   
   def empty?
     return (length == 0)
+  end
+  
+  def at(tgt)
+    return self.entry( tgt.to_i ) if tgt =~ /^\d+$/
+    ret = []
+    each { |nd| ret << (nd/tgt).to_ary }
+    ret.flatten!
   end
 end
 

@@ -38,7 +38,10 @@ typedef struct {
 RUBY_EXTERN VALUE rb_cFastXmlDoc;
 RUBY_EXTERN VALUE rb_cFastXmlNode;
 
-RUBY_EXTERN VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath);
+RUBY_EXTERN ID s_readlines;
+RUBY_EXTERN ID s_to_s;
+
+RUBY_EXTERN VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk);
 RUBY_EXTERN VALUE fastxml_raw_node_to_obj(xmlNodePtr cur);
 RUBY_EXTERN VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data);
 RUBY_EXTERN VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len);

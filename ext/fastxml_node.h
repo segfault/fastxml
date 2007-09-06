@@ -5,7 +5,7 @@
 #ifndef fastxml_node_h
 #define fastxml_node_h
 RUBY_EXTERN VALUE fastxml_node_initialize(VALUE self);
-RUBY_EXTERN VALUE fastxml_node_search(VALUE self,VALUE raw_xpath);
+RUBY_EXTERN VALUE fastxml_node_search(VALUE self,VALUE raw_xpath, VALUE blk);
 RUBY_EXTERN VALUE fastxml_node_name(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_value(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_value_set(VALUE self, VALUE new_val);

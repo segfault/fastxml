@@ -6,7 +6,8 @@ require 'fastxml'
 
 describe FastXml::Doc, " functionality" do
   before(:all) do
-    data_raw = open( "./test_data/hasno_feed.xml" )
+    @filename = "./test_data/hasno_feed.xml"
+    data_raw = open( @filename )
     @data_ary = data_raw.readlines
     data_raw.close
     @data_str = @data_ary.join('')
@@ -22,10 +23,6 @@ describe FastXml::Doc, " functionality" do
     @doc.should respond_to( :children )
     @doc.children.should_not be_nil
   end
-
-  #it 'should be able to run namespaced xpath searches' do
-  #  @doc.search( "/Atom:feed/Atom:entry").length.should > 1
-  #end
   
   it 'should be able to run default namespace xpath searches' do
     @doc.should respond_to( :search )
@@ -55,5 +52,12 @@ describe FastXml::Doc, " functionality" do
   it 'should provide an at method' do
     @doc.should respond_to( :at )
     @doc.at( "/feed" ).should_not be_nil
+  end
+  
+  it 'should be able to parse objects with a readlines method' do
+    rlm = FastXml( open( @filename ) )
+    rlm.should_not be_nil
+    rlm.to_s.should == @doc.to_s
+    rlm.should_not == @doc
   end
 end
