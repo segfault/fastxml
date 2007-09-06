@@ -78,25 +78,25 @@ void fastxml_data_free( fxml_data_t *data )
 {
     if (data != NULL)
     {
-        if (data->doc != NULL && data->node == NULL)
+		if (data->xpath_obj != NULL) 
+			xmlXPathFreeObject( data->xpath_obj );			
+	
+        if (data->doc != NULL && data->node == NULL && data->list == NULL && data->xpath_obj == NULL) 
             xmlFreeDoc( data->doc );
 
-		if (data->list != NULL && data->listType == 0) {
-			xmlFreeNodeList( data->list );
-		}
         // the doc free will cleanup the nodes
 
+		data->xpath_obj = NULL;
 		data->list = NULL;
         data->doc = NULL;
-        data->node = NULL;
-        free(data);
+		data->node = NULL;
+        free( data );
     }
     data = NULL;
 }
 
 VALUE fastxml_data_alloc( VALUE klass )
 {
-    //return Data_Wrap_Struct(klass, file_mark, file_free, f);
     return Qnil;
 }
 
@@ -127,29 +127,28 @@ VALUE fastxml_nodelist_to_obj(xmlNodePtr root, int len)
 	fxml_data_t *ndlst = ALLOC(fxml_data_t);
 	memset( ndlst, 0, sizeof(fxml_data_t) );
 	
-	ndlst->listType = len == -1 ? 1 : 0;
-	ndlst->listLen = len;
+	ndlst->list_len = len;
 	ndlst->list = cur;
 	ret = rb_class_new_instance( 0, 0, rb_cFastXmlNodeList ); 
     dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, ndlst );
     rb_iv_set( ret, "@lxml_doc", dv_chld );
-
-    /*ret = rb_ary_new();
-    while (cur != NULL)
-	{        
-        rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
-		cur = cur->next;
-	}*/
    
 	return ret;
 }
 
-VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr xpath_obj, fxml_data_t *data)
+VALUE fastxml_nodeset_to_obj(xmlXPathObjectPtr raw_xpath_obj, fxml_data_t *data)
 {
-    xmlNodeSetPtr nodes = xpath_obj->nodesetval;
-    xmlNodePtr list = nodes->nodeTab;
-
-	return fastxml_nodelist_to_obj( list, (nodes) ? nodes->nodeNr : 0 );
+    VALUE ret, dv_chld;
+	fxml_data_t *ndlst = ALLOC(fxml_data_t);
+	memset( ndlst, 0, sizeof(fxml_data_t) );
+	
+	ndlst->xpath_obj = raw_xpath_obj;
+	ndlst->list_len = raw_xpath_obj->nodesetval->nodeNr;
+	ret = rb_class_new_instance( 0, 0, rb_cFastXmlNodeList ); 
+    dv_chld = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, ndlst );
+    rb_iv_set( ret, "@lxml_doc", dv_chld );
+   
+	return ret;
 }
 
 VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
@@ -252,7 +251,6 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath)
 
 	xmlFree( ns_list );
 	xmlXPathFreeCompExpr( xpath_xpr );
-    //xmlXPathFreeObject( xpath_obj );
     xmlXPathFreeContext( xpath_ctx ); 
 
     return ret;	

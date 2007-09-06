@@ -56,6 +56,10 @@ class FastXml::NodeList
   def last
     self.entry(-1)
   end
+  
+  def empty?
+    return (length == 0)
+  end
 end
 
 

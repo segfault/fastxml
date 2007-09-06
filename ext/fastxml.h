@@ -28,11 +28,9 @@ typedef struct {
     xmlDocPtr doc;
     xmlNodePtr node;
 	xmlNodePtr list;
-    xmlXPathContextPtr xpathCtx; 
-    xmlXPathObjectPtr xpathObj;     
+    xmlXPathObjectPtr xpath_obj;     
 	xsltStylesheetPtr xslt;
-	int listLen;
-	short listType;
+	int list_len;
 } fxml_data_t;
 
 

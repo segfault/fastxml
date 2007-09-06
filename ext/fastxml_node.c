@@ -185,7 +185,6 @@ VALUE fastxml_node_value_set(VALUE self, VALUE new_val)
     ents = xmlEncodeEntitiesReentrant( data->doc, (const xmlChar*)StringValuePtr(val_s) );
     spec = xmlEncodeSpecialChars( data->doc, ents );
 
-   // printf("setting chars: %s\n", spec);
     xmlNodeSetContent( data->node, spec );
     xmlFree( ents );
 
@@ -200,7 +199,7 @@ VALUE fastxml_node_value(VALUE self)
 
     dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data ); 
-
+	
 	cont = xmlNodeGetContent( data->node );
 
     if (cont == NULL)

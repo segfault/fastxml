@@ -40,18 +40,18 @@ VALUE fastxml_nodelist_length(VALUE self)
     dv = rb_iv_get( self, "@lxml_doc" );    
     Data_Get_Struct( dv, fxml_data_t, data );
 	
-	if (data->listLen == -1)
+	if (data->list_len == -1)
 	{
-		data->listLen = 0;
+		data->list_len = 0;
 		cur = data->list;
 		while (cur != NULL)
 		{
-			data->listLen++;
+			data->list_len++;
 			cur = cur->next;
 		}
 	}
 	
-	return rb_int2inum( data->listLen );
+	return rb_int2inum( data->list_len );
 }
 
 VALUE fastxml_nodelist_to_ary(fxml_data_t *root)
@@ -71,11 +71,11 @@ VALUE fastxml_nodelist_to_ary(fxml_data_t *root)
 VALUE fastxml_nodeset_to_ary(fxml_data_t *root)
 {
 	VALUE ret;
-    xmlNodePtr cur = root->list;	
+	xmlNodePtr cur = root->xpath_obj->nodesetval->nodeTab;	
 	int i;
 	
  	ret = rb_ary_new();
-    for (i = 0; i < root->listLen; i++) {
+    for (i = 0; i < root->list_len; i++) {
         rb_ary_push( ret, fastxml_raw_node_to_obj( cur ) );
 		cur++;
     }
@@ -88,7 +88,7 @@ VALUE fastxml_nodelist_gen_list(VALUE self, fxml_data_t *data)
 	VALUE lst = rb_iv_get( self, "@list" );
 
 	if (lst == Qnil) {
-	 	if (data->listType == 0) {
+	 	if (data->xpath_obj != NULL) {
 			lst = fastxml_nodeset_to_ary( data );
 			rb_iv_set( self, "@list", lst );
 		} else {
