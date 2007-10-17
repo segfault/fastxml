@@ -4,7 +4,7 @@
 
 #ifndef fastxml_doc_h
 #define fastxml_doc_h
-RUBY_EXTERN VALUE fastxml_doc_initialize(VALUE self, VALUE data);
+RUBY_EXTERN VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self);
 RUBY_EXTERN VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath, VALUE blk);
 RUBY_EXTERN VALUE fastxml_doc_to_s(VALUE self);
 RUBY_EXTERN VALUE fastxml_doc_root(VALUE self);

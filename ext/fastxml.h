@@ -38,6 +38,9 @@ typedef struct {
 RUBY_EXTERN VALUE rb_cFastXmlDoc;
 RUBY_EXTERN VALUE rb_cFastXmlNode;
 
+RUBY_EXTERN VALUE rb_sValidateDtd;
+RUBY_EXTERN VALUE rb_sForgivingParse;
+
 RUBY_EXTERN ID s_readlines;
 RUBY_EXTERN ID s_to_s;
 

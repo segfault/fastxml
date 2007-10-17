@@ -120,17 +120,26 @@ VALUE fastxml_doc_root(VALUE self)
     return fastxml_raw_node_to_obj( root );
 }
 
-VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
+VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
 {
-    VALUE data_s, dv, lines;
+    VALUE data_s, dv, lines, xml_doc_str, opts, blk;
     fxml_data_t *data;
     int parser_opts = XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
-    int parse_dtd = XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;
-    int parse_forgiving = XML_PARSE_RECOVER;
+
+    if (rb_scan_args( argc, argv, "11&", &xml_doc_str, &opts, &blk ) == 0)
+        return Qnil; // error state
 
     if (NIL_P(xml_doc_str)) {
         rb_raise(rb_eArgError, "nil passed as xml document");
         return Qnil;
+    }
+
+    if (opts != Qnil) {
+        if (rb_hash_aref(opts, rb_sValidateDtd) != Qnil) 
+            parser_opts = parser_opts | XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;
+        
+        if (rb_hash_aref(opts, rb_sForgivingParse) != Qnil) 
+            parser_opts = parser_opts | XML_PARSE_RECOVER;
     }
 
 	if (rb_respond_to( xml_doc_str, s_readlines )) {
@@ -155,6 +164,9 @@ VALUE fastxml_doc_initialize(VALUE self, VALUE xml_doc_str)
     
     dv = Data_Wrap_Struct( rb_cObject, fastxml_data_mark, fastxml_data_free, data );
     rb_iv_set(self, "@lxml_doc", dv );
+
+    if (blk != Qnil)
+        rb_yield( self );
 
     return self;
 }

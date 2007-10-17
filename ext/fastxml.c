@@ -10,6 +10,8 @@
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;
 VALUE rb_cFastXmlNodeList;
+VALUE rb_sValidateDtd;
+VALUE rb_sForgivingParse;
 ID s_readlines;
 ID s_to_s;
 
@@ -33,7 +35,9 @@ void Init_fastxml()
     rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
 
     /* Doc */
-    rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, 1 );
+    rb_sValidateDtd = ID2SYM( rb_intern("validate") );
+    rb_sForgivingParse = ID2SYM( rb_intern("forgiving") );
+    rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, -1 );
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
     rb_define_method( rb_cFastXmlDoc, "root", fastxml_doc_root, 0 );
@@ -244,7 +248,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk)
 	}	
 
 	xpath_obj = xmlXPathCompiledEval( xpath_xpr, xpath_ctx );
-    if(xpath_obj == NULL) {
+    if (xpath_obj == NULL) {
         rb_raise( rb_eRuntimeError, "unable to evaluate xpath expression" );
 		xmlXPathFreeCompExpr( xpath_xpr );
         xmlXPathFreeContext( xpath_ctx ); 
