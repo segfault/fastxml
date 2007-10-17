@@ -14,6 +14,11 @@ describe FastXml::Doc, " functionality" do
     @doc = FastXml::Doc.new( @data_str )
   end
 
+  it 'should have an optional options hash argument' do
+    doc = FastXml::Doc.new( @data_str, { :forgiving => true } )
+    doc.should_not be_nil
+  end
+
   it 'should have a root node accessor' do
     @doc.should respond_to( :root )
     @doc.root.should_not be_nil
