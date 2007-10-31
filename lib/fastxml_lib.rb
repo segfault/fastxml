@@ -36,6 +36,14 @@ class FastXml::Doc
     nil
   end
   
+  def forgiving?
+    (@forgiving ||= false)
+  end
+  
+  def  validate?
+    (@validate_dtd ||= false)
+  end
+  
   def xpath
     "/"
   end

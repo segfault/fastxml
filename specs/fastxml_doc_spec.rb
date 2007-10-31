@@ -18,6 +18,20 @@ describe FastXml::Doc, " functionality" do
     doc = FastXml::Doc.new( @data_str, { :forgiving => true } )
     doc.should_not be_nil
   end
+  
+  it 'should support a forgiving option' do
+    doc = FastXml::Doc.new( @data_str, { :forgiving => true } )
+    doc.forgiving?.should == true
+    alt_doc = FastXml::Doc.new( @data_str, { :forgiving => false } )
+    alt_doc.forgiving?.should == false
+  end 
+  
+  it 'should support a validate option' do
+    doc = FastXml::Doc.new( @data_str, { :validate => true } )
+    doc.validate?.should == true
+    alt_doc = FastXml::Doc.new( @data_str, { :validate => false } )
+    alt_doc.validate?.should == false    
+  end
 
   it 'should have a root node accessor' do
     @doc.should respond_to( :root )

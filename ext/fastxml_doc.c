@@ -135,11 +135,15 @@ VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
     }
 
     if (opts != Qnil) {
-        if (rb_hash_aref(opts, rb_sValidateDtd) != Qnil) 
+        if (rb_hash_aref(opts, rb_sValidateDtd) == Qtrue) {
             parser_opts = parser_opts | XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR | XML_PARSE_DTDVALID;
-        
-        if (rb_hash_aref(opts, rb_sForgivingParse) != Qnil) 
+			rb_iv_set( self, "@validate_dtd", Qtrue );
+        }
+
+        if (rb_hash_aref(opts, rb_sForgivingParse) == Qtrue) {
             parser_opts = parser_opts | XML_PARSE_RECOVER;
+			rb_iv_set( self, "@forgiving", Qtrue );
+		}
     }
 
 	if (rb_respond_to( xml_doc_str, s_readlines )) {
