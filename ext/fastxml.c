@@ -6,10 +6,12 @@
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
 #include "fastxml_nodelist.h"
+#include "fastxml_attrlist.h"
 
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;
 VALUE rb_cFastXmlNodeList;
+VALUE rb_cFastXmlAttrList;
 VALUE rb_sValidateDtd;
 VALUE rb_sForgivingParse;
 ID s_readlines;
@@ -33,6 +35,7 @@ void Init_fastxml()
     rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
     rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
     rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
+	rb_cFastXmlAttrList = rb_define_class_under( rb_mFastXml, "AttrList", rb_cObject );
 
     /* Doc */
     rb_sValidateDtd = ID2SYM( rb_intern("validate") );
@@ -56,7 +59,7 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlNode, "content=", fastxml_node_value_set, 1 );
     rb_define_method( rb_cFastXmlNode, "inner_xml", fastxml_node_innerxml, 0 );
 	rb_define_method( rb_cFastXmlNode, "xpath", fastxml_node_xpath, 0 );
-	rb_define_method( rb_cFastXmlNode, "attr", fastxml_node_attr, 1 );
+	rb_define_method( rb_cFastXmlNode, "attr", fastxml_node_attr, 0 );
 	rb_define_method( rb_cFastXmlNode, "children", fastxml_node_children, 0 );
 	rb_define_method( rb_cFastXmlNode, "next", fastxml_node_next, 0 );	
 	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
@@ -70,6 +73,12 @@ void Init_fastxml()
     rb_define_method( rb_cFastXmlNodeList, "each", fastxml_nodelist_each, 0 );
     rb_define_method( rb_cFastXmlNodeList, "entry", fastxml_nodelist_entry, 1 );
 	rb_define_method( rb_cFastXmlNodeList, "to_ary", fastxml_nodelist_entry, 0 );
+	
+	/* AttrList */
+	rb_include_module( rb_cFastXmlAttrList, rb_mEnumerable );
+	rb_define_method( rb_cFastXmlAttrList, "initialize", fastxml_attrlist_initialize, 0 );
+	rb_define_method( rb_cFastXmlAttrList, "[]", fastxml_attrlist_indexer, 1 );
+	rb_define_method( rb_cFastXmlAttrList, "[]=", fastxml_attrlist_indexer_set, 2 );
 	
 	rb_require( "lib/fastxml_lib" );
 

@@ -34,11 +34,6 @@ describe FastXml::Node, ' functionality' do
     @node.name.should_not be_nil
   end
   
-  it 'should provide a content accessor' do
-    @node.should respond_to( :content )
-    @node.content.should_not be_nil
-  end
-  
   it 'should provide a to_s method' do
     @node.should respond_to( :to_s )
     @node.to_s.should_not be_nil
@@ -50,7 +45,18 @@ describe FastXml::Node, ' functionality' do
   end  
   
   it 'should provide an attribute accessor method named attr' do
-    @node.should respond_to( :attr )
+    @node.should respond_to( 'attr' )
+    @node.attr.should respond_to( '[]' )
+    @node.attr[:ab].should be_nil
+    @node.attr["ab"].should be_nil
+  end
+  
+  it 'should provide an attribute mutator method that responds to symbols' do
+    @node.should respond_to( 'attr' )
+    @node.attr.should respond_to( '[]' )
+    @node.attr[:ab] = "test"
+    @node.attr[:ab].should == "test"
+    @node.attr["ab"].should == "test"
   end
   
   it 'should provide a next method' do
@@ -89,4 +95,16 @@ describe FastXml::Node, ' functionality' do
     @node.should respond_to( :at )
     @node.at( "entry" ).should_not be_nil
   end  
+  
+  it 'should provide a content accessor' do
+    @node.should respond_to( :content )
+    @node.content.should_not be_nil
+  end
+  
+  it 'should provide a content mutator' do
+    @node.should respond_to( :content= )
+    @node.content = "test"
+    @node.content.should_not be_nil
+    @node.content.should == "test"
+  end
 end

@@ -132,25 +132,26 @@ VALUE fastxml_node_name(VALUE self)
     return ret;
 }
 
-VALUE fastxml_node_attr(VALUE self, VALUE attr_name)
+
+VALUE fastxml_node_attr(VALUE self)
 {
-	VALUE ret, dv;
+	VALUE self_dv, ret;
 	fxml_data_t *data;
-	xmlChar *raw_ret, *name_str;
-	
-	dv = rb_iv_get( self, "@lxml_doc" );
-	Data_Get_Struct( dv, fxml_data_t, data );
-	
-	name_str = (xmlChar*)StringValuePtr( attr_name );
-	raw_ret = xmlGetProp( data->node, name_str );
-	if (raw_ret == NULL)
-		return Qnil;
-		
-	ret = rb_str_new2( (const char*)raw_ret );
-	xmlFree( raw_ret );
-	
+	xmlChar *raw_ret;
+
+	ret = rb_iv_get( self, "@attrs" );
+	if (ret == Qnil) {
+		self_dv = rb_iv_get( self, "@lxml_doc" );
+		Data_Get_Struct( self_dv, fxml_data_t, data );
+		ret = rb_class_new_instance( 0, 0, rb_cFastXmlAttrList ); 
+
+		rb_iv_set( ret, "@lxml_doc", self_dv );
+    	rb_iv_set( self, "@attrs", ret );
+	}
+
 	return ret;
 }
+
 
 VALUE fastxml_node_xpath(VALUE self)
 {

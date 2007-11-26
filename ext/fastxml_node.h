@@ -12,7 +12,7 @@ RUBY_EXTERN VALUE fastxml_node_value_set(VALUE self, VALUE new_val);
 RUBY_EXTERN VALUE fastxml_node_innerxml(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_to_s(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_xpath(VALUE self);
-RUBY_EXTERN VALUE fastxml_node_attr(VALUE self, VALUE attr_name);
+RUBY_EXTERN VALUE fastxml_node_attr(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_children(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_next(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_prev(VALUE self);
