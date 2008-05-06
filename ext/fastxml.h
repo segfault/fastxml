@@ -18,10 +18,15 @@
 #include <libxml/xpathInternals.h>
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
+#include <libxml/HTMLparser.h> 
 
 #ifndef XML_WITH_TREE
 	#define XML_WITH_TREE 2
 	#define XML_WITH_XPATH 16
+#endif
+
+#ifndef HTML_PARSE_RECOVER
+    #define HTML_PARSE_RECOVER 1
 #endif
 
 typedef struct {
@@ -41,6 +46,7 @@ RUBY_EXTERN VALUE rb_cFastXmlAttrList;
 
 RUBY_EXTERN VALUE rb_sValidateDtd;
 RUBY_EXTERN VALUE rb_sForgivingParse;
+RUBY_EXTERN VALUE rb_sHtmlParse;
 
 RUBY_EXTERN ID s_readlines;
 RUBY_EXTERN ID s_to_s;

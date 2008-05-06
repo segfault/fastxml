@@ -14,6 +14,7 @@ VALUE rb_cFastXmlNodeList;
 VALUE rb_cFastXmlAttrList;
 VALUE rb_sValidateDtd;
 VALUE rb_sForgivingParse;
+VALUE rb_sHtmlParse;
 ID s_readlines;
 ID s_to_s;
 
@@ -37,9 +38,12 @@ void Init_fastxml()
     rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
 	rb_cFastXmlAttrList = rb_define_class_under( rb_mFastXml, "AttrList", rb_cObject );
 
-    /* Doc */
+    /* setting symbols */
     rb_sValidateDtd = ID2SYM( rb_intern("validate") );
     rb_sForgivingParse = ID2SYM( rb_intern("forgiving") );
+    rb_sHtmlParse = ID2SYM( rb_intern("html") );
+    
+    /* Doc */
     rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, -1 );
     rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );

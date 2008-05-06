@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>tech addict </title>
+  <meta name="description" content="tech addict" />
+  <meta name="keywords" content="mark guzman,mark,guzman,technical,linux,rant,gentoo,apple,osx,cisco,solaris,security,administration,javascript,c#,.net,ruby,rails,addict,vim" />
+  <meta name="generator" content="Mephisto" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <meta name="author" content="Mark Guzman" /> 
+  <link rel="meta" type="application/rdf+xml" title="FOAF" href="http://segfault.hasno.info/foafme.rdf" />
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" href="/favicon.ico" />
+  <script type="text/javascript" src="http://www.google-analytics.com/urchin.js"></script>
+  <script type="text/javascript">
+      _uacct = "UA-122343-1";
+      urchinTracker();
+  </script>
+  <script type="text/javascript" src="http://embed.technorati.com/embed/i76429ghf.js"></script>     
+  <link href="/stylesheets/main.css" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/code.css" rel="stylesheet" type="text/css" />
+  <link href="http://feeds.feedburner.com/techaddict" title="Tech Addict - mark guzmans mental lapses" type="application/atom+xml" rel="alternate" />
+  <link href="/feed/atom.xml" rel="alternate" type="application/atom+xml" />
+</head>
+<body>
+  <div id="title_black">&nbsp;</div>
+  <div id="base">
+    <div id="wrap">
+        <div id="header"><h1><a href="/">tech addict</a></h1>
+        <p class="description">mark guzman's mental lapses documented regularly</p>
+        </div>
+        <div id="content">
+        
+<div class="entry entry-21503">
+	<div class="entrytitle">
+		<h2><a href="/2008/4/15/hardware-issue-weekend" title="hardware issue weekend">hardware issue weekend</a></h2> 
+		<h3>April 14th, 2008</h3>
+	</div>
+	<div class="entrybody">
+	  
+		  <p>This weekend I relocated myself and my servers to our temporary stomping grounds. Everything went without a hitch. Except of course for my main server, the trusty dual p3 800 machine that has hosted hasno for a long time. Luckily the drive array was not troubled by the loss of it's brainier compatriot. I picked up a nice new core2duo e6550 and mobo at a local store and had it up and running later in the day. Things are a lot speedier with current hardware. Rest in peace my 800mhz friend.</p><p>In addition to the server hardware troubles, my macbook's hard drive has <a href="http://hasno.info/2007/9/26/lemontastic-macbook-woes">yet again</a>. This is my third hard drive failure. Hitatchi's 160gb sata drives are krud. The laptop itself is great, I just wish I didn't have the hard drive dying every 3-6mo. At least the server migration went through without data loss, I guess I'll just focus on the bright side of the weekend.</p><p>As a side note, cablevision can't and won't maintain static ip addresses through a move. So if your a business user hosting content at your office, expect longer downtime due to dns propagation and ip address setup snafus when moving. Make sure you have them unblock ports 80 and 25, since by default on all new ip setup they block them even if they were unblocked for your account previously.</p>
+		
+		
+	</div>
+	
+	<div class="entrymeta">
+	<div class="postinfo">
+		<span class="postedby">Posted by segfault</span>
+		<span class="filedto">Filed in <a href="/apple" title="apple">apple</a>, <a href="/random" title="random">random</a></span>
+		<span class="tagged">Tags: <a href="/tags/graveyard" rel="tag" title="graveyard">graveyard</a>, <a href="/tags/lemon" rel="tag" title="lemon">lemon</a>, <a href="/tags/macbook" rel="tag" title="macbook">macbook</a>, <a href="/tags/moving" rel="tag" title="moving">moving</a>, <a href="/tags/server" rel="tag" title="server">server</a></span>
+	</div>
+	
+	  <a href="/2008/4/15/hardware-issue-weekend#comments" class="commentslink">0 comments  &#187;</a>
+	
+    <a href="http://del.icio.us/post?url=/2008/4/15/hardware-issue-weekend&amp;title=hardware issue weekend" style="border: 0;">
+        <img src="/images/delicious.gif" style="border: 0;" height="16" width="16" alt="del.icio.us"/>
+    </a>
+    <a href="http://digg.com/submit?phase=2&amp;url=/2008/4/15/hardware-issue-weekend" style="border: 0;">
+        <img src="/images/digg.gif" style="border: 0;" height="16" width="16" alt="digg"/>
+    </a>
+	</div>
+	
+</div>
+
+<div class="entry entry-21162">
+	<div class="entrytitle">
+		<h2><a href="/2008/4/3/me-and-my-git-svn" title="me and my git-svn">me and my git-svn</a></h2> 
+		<h3>April 3rd, 2008</h3>
+	</div>
+	<div class="entrybody">
+	  
+		  <p>I recently switched a bunch of my projects over to git. Why? All the cool kids are doing it, I figured I'd give it a shot. Either way I ran into a few bumps with the git-svn stuff. Everything went really well until I tried to push back my changes from git. I'd been committing changes to my repo and pushing them to github/hasno without issue. I ran into errors when I tried to <code>git-svn dcommit</code>.</p>
+<p>Here's what I'm currently calling the <em>right way</em>, as usual ymmv:
+<ol>
+  <li>
+   init if you haven't done i already, check .git/config for an svn-remote entry...<br/>
+   <code>git-svn init &lt;repo url&gt;</code>
+  </li>
+  <li>
+    pull the svn revision information. a bunch of info should scroll by matching svn revisions to git sha1 revisions.<br/>
+   <code>git-svn fetch</code>
+  </li>
+  <li>
+   this will yeild a list of local & remote branches, you should see trunk in the list</br>
+   <code>git branch -a</code>
+   <blockquote><pre>
+* master
+  origin/HEAD
+  origin/local-svn
+  origin/master
+  tags/release-0.1.23
+  tags/release-0.2.42
+  tags/release-0.2.44
+  tags/release-0.2.50
+  trunk
+   </pre></blockquote>
+</li>
+  <li>
+  switch to a local branch based on the trunk remote branch<br/>
+  <strong>afaik you really don't want to be doing any of this type of stuff in a remote branch</strong></br>
+ <code>git checkout -b local-svn trunk</code>
+  </li>
+  <li>
+  now we need to pull your local changes from your master branch to your local-svn branch</br>
+ <code>git merge master</code><br/>
+  it's worth noting that you could do a <code>git rebase</code>, but when I tried that I couldn't use git-svn dcommit
+  </li>
+   <li>
+     go through and merge any conflicts. then <code>git commit</code>. at this point you can <code>git dcommit</code>
+   </li>
+</ol>
+</p>
+<p>So if all that was how I got it working, what did I run into along the way... Well I'm glad you ask. Here's a list of errors and the reason for them afaik:
+<dl>
+<dt>Unable to determine upstream SVN information from HEAD history</dt><dd>You have a recent commit that doesn't have any history in .git/ref/remote/svn or .git/svn. It also doesn't have the <strong>git-svn-id:</strong> key in the commit message.</dd>
+<dt>[svn-remote &quot;svn&quot;] unknown</dt><dd>Did you manually create the svn-remote entry, or specify a different name? If so you need to pass that on to the commands, they seem to assume it's named svn.</dd>
+<dt>fatal: bad default revision 'refs/remotes/git-svn'</dt><dd>Somethings amiss with your svn-remote entry in <code>.git/config</code></dd>
+</p>
+<p>That's about it for me, if you've seen those errors and can add some detail or shed some light on a better way please do share. As of this moment ruby-hl7 is synched up.</p>
+		
+		
+	</div>
+	
+	<div class="entrymeta">
+	<div class="postinfo">
+		<span class="postedby">Posted by segfault</span>
+		<span class="filedto">Filed in <a href="/code" title="code">code</a></span>
+		<span class="tagged">Tags: <a href="/tags/git" rel="tag" title="git">git</a>, <a href="/tags/git-svn" rel="tag" title="git-svn">git-svn</a>, <a href="/tags/subversion" rel="tag" title="subversion">subversion</a></span>
+	</div>
+	
+	  <a href="/2008/4/3/me-and-my-git-svn#comments" class="commentslink">0 comments  &#187;</a>
+	
+    <a href="http://del.icio.us/post?url=/2008/4/3/me-and-my-git-svn&amp;title=me and my git-svn" style="border: 0;">
+        <img src="/images/delicious.gif" style="border: 0;" height="16" width="16" alt="del.icio.us"/>
+    </a>
+    <a href="http://digg.com/submit?phase=2&amp;url=/2008/4/3/me-and-my-git-svn" style="border: 0;">
+        <img src="/images/digg.gif" style="border: 0;" height="16" width="16" alt="digg"/>
+    </a>
+	</div>
+	
+</div>
+
+<div class="entry entry-20342">
+	<div class="entrytitle">
+		<h2><a href="/2008/2/29/uninformative-messages-msb3247" title="uninformative messages (MSB3247,MSB4051)">uninformative messages (MSB3247,MSB4051)</a></h2> 
+		<h3>February 29th, 2008</h3>
+	</div>
+	<div class="entrybody">
+	  
+		  <blockquote>warning MSB3247: Found conflicts between different versions of the same dependent assembly.</blockquote>
+<p>Seriously how is that helpful? Guess what the solution is according to VS2k8: <blockquote>
+Double-click the warning and then select &quot;Yes&quot; when you get the prompt, &quot;Do you want to fix these conflicts by adding binding redirect records in the app.config file?&quot;
+</blockquote><img src="http://hasno.info/assets/2008/2/29/goggles.jpg" width="90px" style="width: 90px; float: right; clear: both; padding: 5px;" alt="The goggles do nothing!"/> That has to be the most pointless suggestion ever. This warning doesn't go away, nor is there any indication in the message as to the culprit. The XML it generates points at some candidates tho.
+</p>
+<p>Now on to see why the same solution builds in VS2k8, but fails when using msbuild on the command line. 
+<blockquote style="clear:both;">
+ Solution file warning MSB4051: Project {ED0038FA-D90E-4C84-AE64-
+245BC76D2406} is referencing a project with GUID {BF209BE8-334A-45E8-940E-CFEF0
+DEE21EE}, but a project with this GUID was not found in the .SLN file.
+</blockquote>
+Apparently that means I'm missing an <strong>EndProject</strong> line. Wonder why that couldn't have been fixed or brought to my attention by studio...? It can also mean that there is indeed an invalid project guid reference in one of the subproject's csproj files. Double check the project list in the solution versus the <Project>{guid}</Project> references. One of my issues was due to that. I'm guessing studio looks up the project by name if it fails to find it by guid.
+</p>
+
+		
+		
+	</div>
+	
+	<div class="entrymeta">
+	<div class="postinfo">
+		<span class="postedby">Posted by segfault</span>
+		<span class="filedto">Filed in <a href="/code" title="code">code</a></span>
+		<span class="tagged">Tags: <a href="/tags/msbuild" rel="tag" title="msbuild">msbuild</a>, <a href="/tags/vs2k8" rel="tag" title="vs2k8">vs2k8</a>, <a href="/tags/windows" rel="tag" title="windows">windows</a></span>
+	</div>
+	
+	  <a href="/2008/2/29/uninformative-messages-msb3247#comments" class="commentslink">0 comments  &#187;</a>
+	
+    <a href="http://del.icio.us/post?url=/2008/2/29/uninformative-messages-msb3247&amp;title=uninformative messages (MSB3247,MSB4051)" style="border: 0;">
+        <img src="/images/delicious.gif" style="border: 0;" height="16" width="16" alt="del.icio.us"/>
+    </a>
+    <a href="http://digg.com/submit?phase=2&amp;url=/2008/2/29/uninformative-messages-msb3247" style="border: 0;">
+        <img src="/images/digg.gif" style="border: 0;" height="16" width="16" alt="digg"/>
+    </a>
+	</div>
+	
+</div>
+
+<div class="entry entry-20070">
+	<div class="entrytitle">
+		<h2><a href="/2008/2/19/subversion-on-windows-with-tortoisesvn" title="Subversion on Windows with TortoiseSVN">Subversion on Windows with TortoiseSVN</a></h2> 
+		<h3>February 19th, 2008</h3>
+	</div>
+	<div class="entrybody">
+	  
+		  <p>It's my first foray into screen casting, hopefully people find it useful. I cover setting up a subversion repository, accessing the repository, putting things into the repository and some other items. I tried pushing this to Google video, but it consistently mangled the text. I'll give it a shot again once I have some time. Any feedback or requests are welcome.
+</p>
+<p>
+<object id="csSWF" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="400" height="318" codebase="http://active.macromedia.com/flash7/cabs/ swflash.cab#version=9,0,28,0">
+                <param name="src" value="http://segfault.hasno.info/screencasts/Subversion on Windows with TortoiseSVN.swf"/>
+                <param name="bgcolor" value="#1a1a1a"/>
+                <param name="quality" value="best"/>
+                <param name="allowScriptAccess" value="always"/>
+                <param name="allowFullScreen" value="false"/>
+                <param name="scale" value="noscale"/>
+                <param name="flashVars" value="autostart=false"/>
+                <embed name="csSWF" src="http://segfault.hasno.info/screencasts/Subversion on Windows with TortoiseSVN.swf" width="400" height="318" bgcolor="#1a1a1a" quality="best" allowScriptAccess="always" allowFullScreen="false" scale="noscale" flashVars="autostart=false" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"></embed>
+</object>  
+<br/>
+For those of you with ipods, <a href="http://segfault.hasno.info/screencasts/Subversion%20on%20Windows%20with%20TortoiseSVN.m4v">here's an ipod friendly version</a>.
+</p>
+		
+		
+	</div>
+	
+	<div class="entrymeta">
+	<div class="postinfo">
+		<span class="postedby">Posted by segfault</span>
+		<span class="filedto">Filed in <a href="/random" title="random">random</a></span>
+		<span class="tagged">Tags: <a href="/tags/screencast" rel="tag" title="screencast">screencast</a>, <a href="/tags/subversion" rel="tag" title="subversion">subversion</a>, <a href="/tags/tortoisesvn" rel="tag" title="tortoisesvn">tortoisesvn</a>, <a href="/tags/windows" rel="tag" title="windows">windows</a></span>
+	</div>
+	
+	  <a href="/2008/2/19/subversion-on-windows-with-tortoisesvn#comments" class="commentslink">1 comments  &#187;</a>
+	
+    <a href="http://del.icio.us/post?url=/2008/2/19/subversion-on-windows-with-tortoisesvn&amp;title=Subversion on Windows with TortoiseSVN" style="border: 0;">
+        <img src="/images/delicious.gif" style="border: 0;" height="16" width="16" alt="del.icio.us"/>
+    </a>
+    <a href="http://digg.com/submit?phase=2&amp;url=/2008/2/19/subversion-on-windows-with-tortoisesvn" style="border: 0;">
+        <img src="/images/digg.gif" style="border: 0;" height="16" width="16" alt="digg"/>
+    </a>
+	</div>
+	
+</div>
+
+<div class="entry entry-19308">
+	<div class="entrytitle">
+		<h2><a href="/2008/1/28/windows-vim-7-1-212" title="windows vim 7.1.212">windows vim 7.1.212</a></h2> 
+		<h3>January 28th, 2008</h3>
+	</div>
+	<div class="entrybody">
+	  
+		  <p><img src="http://hasno.info/assets/2008/1/28/Vimlogo.png" alt="" style="float: right;"/>I've finally gotten around to rebuilding my windows vim install with the latest patches. I tested it on my work machine and laptop's vmware image. It's built with huge, ruby, python, perl, and IME (multibyte). The binaries are optimized for pentium4+ machines with SSE2. You can get the installer <a href="http://segfault.hasno.info/vim/gvim71.zip">here</a>. </p>
+		
+		
+	</div>
+	
+	<div class="entrymeta">
+	<div class="postinfo">
+		<span class="postedby">Posted by segfault</span>
+		<span class="filedto">Filed in <a href="/random" title="random">random</a></span>
+		<span class="tagged">Tags: <a href="/tags/vim" rel="tag" title="vim">vim</a></span>
+	</div>
+	
+	  <a href="/2008/1/28/windows-vim-7-1-212#comments" class="commentslink">0 comments  &#187;</a>
+	
+    <a href="http://del.icio.us/post?url=/2008/1/28/windows-vim-7-1-212&amp;title=windows vim 7.1.212" style="border: 0;">
+        <img src="/images/delicious.gif" style="border: 0;" height="16" width="16" alt="del.icio.us"/>
+    </a>
+    <a href="http://digg.com/submit?phase=2&amp;url=/2008/1/28/windows-vim-7-1-212" style="border: 0;">
+        <img src="/images/digg.gif" style="border: 0;" height="16" width="16" alt="digg"/>
+    </a>
+	</div>
+	
+</div>
+
+
+
+
+
+        </div>
+        <div id="sidebar">
+        <h2>search</h2>
+        <form method="get" id="sform" action="/search">
+            <label for="q">Search:</label>
+                    <input type="text" id="q" value="" name="q" size="15" />
+                </form>
+        
+            <h2>pages</h2>
+            <ul>
+            <li><a href="/about" title="about">about</a></li>
+            </ul>
+        
+        <h2>categories</h2>
+        <ul>
+            <li><a class="selected" href="/" title="home">home</a> (191)</li><li><a href="/random" title="random">random</a> (107)</li><li><a href="/code" title="code">code</a> (64)</li><li><a href="/linux" title="linux">linux</a> (13)</li><li><a href="/apple" title="apple">apple</a> (8)</li><li><a href="/security" title="security">security</a> (2)</li>
+        </ul>
+        <h2><a href="http://del.icio.us/rss/segy">my delicious links</a></h2>
+        <ul class="feedlist">
+            
+            <li><a rel="nofollow" href="http://www.modrails.com/" alt="Overview &#x2014; Phusion Passenger (a.k.a. mod_rails)">Overview &#x2014; Phusion Passenger (a.k.a. mod_rails)</a></li>
+            
+            <li><a rel="nofollow" href="http://scoutapp.com/" alt="Web Monitoring and Reporting Software ~ Scout">Web Monitoring and Reporting Software ~ Scout</a></li>
+            
+            <li><a rel="nofollow" href="http://strokedb.com/" alt="StrokeDB">StrokeDB</a></li>
+            
+            <li><a rel="nofollow" href="http://blogs.msdn.com/mitsu/archive/2008/04/02/visual-linq-query-builder-for-linq-to-sql-vlinq.aspx" alt="Mitsu's blog : Visual Linq query builder for Linq to Sql: VLinq">Mitsu's blog : Visual Linq query builder for Linq to Sql: VLinq</a></li>
+            
+            <li><a rel="nofollow" href="http://www.physalis.net/NatsuLion/NatsuLion_en.html" alt="SecretStaircase - NatsuLion">SecretStaircase - NatsuLion</a></li>
+            
+            <li><a rel="nofollow" href="http://gskinner.com/RegExr/" alt="RegExr: Online Regular Expression Testing Tool">RegExr: Online Regular Expression Testing Tool</a></li>
+            
+        </ul>
+        <h2><a href="http://digg.com/users/segfault">my diggs</a></h2>
+        <ul class="feedlist">
+            
+        </ul>
+     <h2>recent comments</h2>
+     <ul>
+     
+       <li>
+         <a rel="nofollow" href="/2007/6/26/fixing-vim-arrow-keys-in-iterm">phillip</a>: thanks! this has annoyed me for a long time!
+       </li>
+     
+       <li>
+         <a rel="nofollow" href="/2007/11/5/fix-a-missing-user-account-in-leopard">Beaker</a>: This sounds like the fix I am looking for. I just restored my HD from...
+       </li>
+     
+       <li>
+         <a rel="nofollow" href="/2007/11/5/fix-a-missing-user-account-in-leopard">jake</a>: Thank you sooooo much. I've been looking everywhere for an answer to this problem. thanks...
+       </li>
+     
+       <li>
+         <a rel="nofollow" href="/2007/1/30/kensington-broke-my-powerbook">Aaron</a>: I came across this while looking for some new N23 "Smarttips." Smart? My ass! These...
+       </li>
+     
+       <li>
+         <a rel="nofollow" href="/2005/10/28/ibm-serveraid-issues">Hesed</a>: Hello all, If you have not found version 7.0 ..also ServeRAID version 6.11 made the...
+       </li>
+     
+    </ul>
+    <br/>
+    <a href="/tags">Tag List</a>
+<br/>     
+<br/>
+<script type="text/javascript"><!--
+google_ad_client = "pub-1027316146837478";
+google_ad_width = 125;
+google_ad_height = 125;
+google_ad_format = "125x125_as";
+google_ad_type = "text";
+google_ad_channel ="5773351288";
+google_color_border = "336699";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_url = "008000";
+google_color_text = "000000";
+//--></script>
+
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+        
+        </div>
+    </div>
+    <script src="http://feeds.feedburner.com/~s/techaddict?i=" type="text/javascript" charset="utf-8"></script>
+    <div id="footer">tech addict - &copy; Mark Guzman - powered by mephisto</div>
+  </div>
+</body>
+</html>

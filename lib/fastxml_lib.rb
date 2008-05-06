@@ -83,5 +83,11 @@ end
 
 
 def FastXml(data=nil, opts = {}, &blk)
-  FastXml::Doc.new data
+  FastXml::Doc.new( data, opts, &blk )
+end
+
+def FastHtml(data=nil, opts = {}, &blk)
+  opts ||= {}
+  opts[:html] = true
+  FastXml::Doc.new( data, opts, &blk )
 end

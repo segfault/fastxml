@@ -125,6 +125,7 @@ VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
     VALUE data_s, dv, lines, xml_doc_str, opts, blk;
     fxml_data_t *data;
     int parser_opts = XML_PARSE_NOERROR | XML_PARSE_NOWARNING;
+    short html_parser = 0;
 
     if (rb_scan_args( argc, argv, "11&", &xml_doc_str, &opts, &blk ) == 0)
         return Qnil; // error state
@@ -144,6 +145,10 @@ VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
             parser_opts = parser_opts | XML_PARSE_RECOVER;
 			rb_iv_set( self, "@forgiving", Qtrue );
 		}
+
+        if (rb_hash_aref(opts, rb_sHtmlParse) == Qtrue) {
+            html_parser = 1;
+        }
     }
 
 	if (rb_respond_to( xml_doc_str, s_readlines )) {
@@ -158,8 +163,13 @@ VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
     data = ALLOC(fxml_data_t);
     memset( data, (int)NULL, sizeof(fxml_data_t) );
 
-    data->doc = xmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len, 
+    if (html_parser == 0)
+        data->doc = xmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len, 
                                "noname.xml", NULL, parser_opts );
+    else
+        data->doc = htmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len,
+                                    "noname.html", NULL, HTML_PARSE_RECOVER | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING );
+
     // if we're mallformed we might want to use xmlRecoverMemcory(char*, int)
     if (data->doc == NULL) {
         rb_raise( rb_eRuntimeError, "Failed to parse document" );
