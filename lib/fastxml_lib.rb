@@ -1,6 +1,6 @@
 # $Id$
 module FastXml
-  VERSION = "0.1.90" 
+  VERSION = "0.1.91" 
 end
 
 module FastXml::Common
