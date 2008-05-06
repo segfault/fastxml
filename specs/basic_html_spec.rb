@@ -33,8 +33,18 @@ describe FastXml::Doc, " doing html parsing" do
     doc.should_not be_nil
     doc.to_s.should_not be_nil
   end
+
+  it 'should be able to parse hasno and search' do
+    doc = FastHtml( @data_str )
+    descs = (doc/"p[class=description]")
+    descs.should_not be_nil
+    descs.each do |d|
+      d.should_not be_nil
+      d.length.should_be >= 1
+    end
+  end
   
-  it 'should be able to parse large files' do
+  it 'should handle the twitter public timeline' do
     raw_data = open( "./test_data/twitter_public.html" ).readlines.join('')
     doc = FastHtml( raw_data )
     doc.should_not be_nil
@@ -45,12 +55,16 @@ describe FastXml::Doc, " doing html parsing" do
     doc.root.children.should_not be_nil
   end
 
+
+
   it 'should be able to handle the cnn site' do
     raw_data = open( "./test_data/cnn_main.html" ).readlines.join('')
     doc = FastHtml( raw_data )
     doc.should_not be_nil
     doc.to_s.should_not be_nil
     doc.to_s.length.should >= 10000
+    (doc/"").should_not be_nil
+    doc.root.children.should_not be_nil
   end
 
 end
