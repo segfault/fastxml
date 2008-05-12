@@ -243,7 +243,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk)
 	if (root->ns != NULL) { // we have a base namespace, this is going to get "interesting"
 		root_ns = (xmlChar*)root->ns->prefix;
 		if (root_ns == NULL) 
-			root_ns = (xmlChar*)"myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope"; 
+			root_ns = (xmlChar*)"__myFunkyLittleRootNsNotToBeUseByAnyoneElseIHope__"; 
             // alternatives? how do other xpath processors handle root/default namespaces?
 
 		xmlXPathRegisterNs( xpath_ctx, root_ns, root->ns->href );

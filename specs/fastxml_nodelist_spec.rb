@@ -42,5 +42,18 @@ describe FastXml::NodeList, ' functionality' do
     @list.inspect.should_not be_nil
   end
   
+  it 'should provide a first method' do
+    @list.should respond_to( :first )
+    @list.first.should_not be_nil
+    @list.first.should == @list[0]
+    @list.first.to_s.should == @list[0].to_s
+  end
+  
+  it 'should provide a last method' do
+    @list.should respond_to( :last )
+    @list.last.should_not be_nil
+    @list.last.should == @list[-1]
+    @list.last.to_s.should == @list[-1].to_s
+  end
 
 end
