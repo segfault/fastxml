@@ -45,4 +45,11 @@ describe FastXml::Doc, " when created" do
     doc.root.children.should_not be_nil
   end
 
+  it 'should be able to process io from open' do
+    doc = FastXml( open( "./test_data/hasno_feed.xml" ) )
+    doc.should_not be_nil
+    doc.to_s.should_not be_nil
+    doc.to_s.length.should >= 200
+  end
+
 end

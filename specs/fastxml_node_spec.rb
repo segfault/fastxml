@@ -23,7 +23,8 @@ describe FastXml::Node, ' functionality' do
     (@node/"feed").length.should >= 1
     (@node/"feed").length.should == @node.search( '/feed' ).length
   end  
-  
+
+
   it 'should provide a children accessor' do
     @node.should respond_to( :children )
     @node.children.should_not be_nil
@@ -37,6 +38,15 @@ describe FastXml::Node, ' functionality' do
   it 'should provide a to_s method' do
     @node.should respond_to( :to_s )
     @node.to_s.should_not be_nil
+    @node.to_s.length.should > 0
+  end
+
+  it 'should provide valid nodes from searches' do
+    entries = @node.search( '//entry' )
+    entries.should_not be_nil
+    entries.length.should > 0
+    entries.first.should_not be_nil
+    entries.first.to_s.should_not be_nil
   end
   
   it 'should provide an inspect method' do
