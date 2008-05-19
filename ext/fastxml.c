@@ -83,6 +83,7 @@ void Init_fastxml()
 	rb_define_method( rb_cFastXmlAttrList, "initialize", fastxml_attrlist_initialize, 0 );
 	rb_define_method( rb_cFastXmlAttrList, "[]", fastxml_attrlist_indexer, 1 );
 	rb_define_method( rb_cFastXmlAttrList, "[]=", fastxml_attrlist_indexer_set, 2 );
+	rb_define_method( rb_cFastXmlAttrList, "include?", fastxml_attrlist_include, 1 );
 	
 	rb_require( "lib/fastxml_lib" );
 

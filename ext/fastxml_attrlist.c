@@ -22,6 +22,9 @@ VALUE fastxml_attrlist_indexer(VALUE self, VALUE attr_name)
 	fxml_data_t *data;
 	xmlChar *raw_ret, *name_str;
 	
+	if (attr_name == Qnil)
+		return Qnil;	
+	
 	dv = rb_iv_get( self, "@lxml_doc" );
 	Data_Get_Struct( dv, fxml_data_t, data );
 	
@@ -43,16 +46,46 @@ VALUE fastxml_attrlist_indexer_set(VALUE self, VALUE attr_name, VALUE attr_value
 	fxml_data_t *data;
 	xmlChar *val, *name_str;
 	
+	if (attr_name == Qnil)
+		return Qnil;	
+	
 	dv = rb_iv_get( self, "@lxml_doc" );
 	Data_Get_Struct( dv, fxml_data_t, data );
 	
 	attr_raw_str = rb_funcall( attr_name, s_to_s, 0 );
 	name_str = (xmlChar*)StringValuePtr( attr_raw_str );
-	val = (xmlChar*)StringValuePtr( attr_value );
 
-    xmlSetProp( data->node, name_str, val );
+	if (attr_value == Qnil) {
+		xmlUnsetProp( data->node, name_str ); // don't care if the node doesn't exist, as the end result is the same.
+	} else {
+		val = (xmlChar*)StringValuePtr( attr_value );
+
+    	xmlSetProp( data->node, name_str, val );
+	}
+
 
 	return attr_value;
+}
+
+VALUE fastxml_attrlist_include(VALUE self, VALUE attr_name)
+{
+	VALUE ret, dv, attr_raw_str;
+	fxml_data_t *data;
+	xmlChar *raw_ret, *name_str;
+	
+	if (attr_name == Qnil)
+		return Qnil;
+	
+	dv = rb_iv_get( self, "@lxml_doc" );
+	Data_Get_Struct( dv, fxml_data_t, data );
+	
+	attr_raw_str = rb_funcall( attr_name, s_to_s, 0 );
+	name_str = (xmlChar*)StringValuePtr( attr_raw_str );
+	raw_ret = xmlGetProp( data->node, name_str );
+	if (raw_ret == NULL)
+		return Qnil;	
+	
+	return Qtrue;
 }
 
 
