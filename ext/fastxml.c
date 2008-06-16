@@ -25,9 +25,7 @@ ID s_readlines;
 ID s_to_s;
 
 void Init_fastxml()
-{
-	VALUE rb_mFastXmlIncludeDoc, rb_mFastXmlIncludeNode, rb_mFastXmlIncludeNodeList;
-	
+{	
     if (xmlHasFeature(XML_WITH_TREE) == 0)
         rb_raise( rb_eRuntimeError, "libxml not built with tree support" );
 
@@ -40,12 +38,7 @@ void Init_fastxml()
     xmlInitParser();
     xmlXPathInit();
     rb_mFastXml = rb_define_module( "FastXml" );
-    VALUE rb_mFastXmlInclude = rb_define_module_under( rb_mFastXml, "Include" );
     rb_define_const( rb_mFastXml, "LIBXML_VERSION", rb_str_new2( LIBXML_DOTTED_VERSION ) );
-	
-	rb_mFastXmlIncludeDoc = rb_define_module_under( rb_mFastXmlInclude, "Doc" );
-	rb_mFastXmlIncludeNode = rb_define_module_under( rb_mFastXmlInclude, "Node" );
-	rb_mFastXmlIncludeNodeList = rb_define_module_under( rb_mFastXmlInclude, "NodeList" );
 
     /* setting symbols */
     rb_sValidateDtd = ID2SYM( rb_intern("validate") );
@@ -65,13 +58,8 @@ void Init_fastxml()
 	Init_fastxml_attrlist();
 	
 	/* pull in the ruby side of things */
-	rb_require( "lib/fastxml_lib" );
-	rb_require( "lib/fastxml_helpers" );
-	
-	/* now let's merge those include modules into the main classes */
-    rb_include_module( rb_cFastXmlDoc, rb_mFastXmlIncludeDoc );	
-    rb_include_module( rb_cFastXmlNode, rb_mFastXmlIncludeNode );	
-    rb_include_module( rb_cFastXmlNodeList, rb_mFastXmlIncludeNodeList );
+	rb_require( "lib/fastxml_lib" );      // ruby-side methods for the FastXml classes
+	rb_require( "lib/fastxml_helpers" );  // FastXml and FastHtml methods
 }
 
 

@@ -30,7 +30,7 @@ module FastXml::Common #:nodoc: all
   alias :to_s :display
 end
 
-module FastXml::Include::Doc #:nodoc:
+class FastXml::Doc
   include FastXml::Common
   
   def doc?
@@ -54,14 +54,14 @@ module FastXml::Include::Doc #:nodoc:
   end
 end
 
-module FastXml::Include::Node #:nodoc:
+class FastXml::Node
   include FastXml::Common
   def doc?
     false
   end
 end
 
-module FastXml::Include::NodeList #:nodoc:
+class FastXml::NodeList 
   def [](idx)
     self.entry(idx)
   end

@@ -1,9 +1,28 @@
-= FastXml, a simple fast xml library using libxml and libxslt
+= FastXml
+a simple fast xml library using libxml and libxslt with an hpricot-like api
 
 == Overview
 
-FastXml is: 
+FastXml: 
 
-# not standalone, it *requires libxml* and *libxslt*
-# it attempts to provide the speediest xml parsing library available for ruby
-# it provides an hpricot-like syntax for xml parsing and xslt processing
+ 1) is not standalone, it *requires libxml* and *libxslt*
+ 2) attempts to provide the speediest xml parsing library available for ruby
+ 3) provides an hpricot-like syntax for xml parsing and xslt processing
+
+== Example
+ doc = FastXml( open( 'test.xml ) )
+ puts doc.root.name
+ puts doc.root.content
+ 
+ doc.root.children.each do |node|
+   puts "%s => %s" % [ node.name, node.content ]
+ end
+
+ (doc/"/node").each { |node| puts node.inspect } #xpath search
+ doc.search( "//node" ).each { |node| puts node.inspect } 
+
+
+== Copyright & Licensing
+Copyright Mark Guzman 2007-2008
+
+Please see the LICENSE file for more details. The short version is it's under the same terms as Ruby.
