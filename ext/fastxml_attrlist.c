@@ -1,6 +1,8 @@
 /*
- *  $Id$
+ * Document-class: FastXml::AttrList
+ *
  */
+// Please see the LICENSE file for licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"
@@ -10,6 +12,19 @@
 
 /* {{{ fastml_attr_list
 */
+void Init_fastxml_attrlist()
+{
+	#ifdef RDOC_SHOULD_BE_SMARTER__THIS_IS_NEVER_RUN
+    rb_mFastXml = rb_define_module( "FastXml" );
+	#endif
+	rb_cFastXmlAttrList = rb_define_class_under( rb_mFastXml, "AttrList", rb_cObject );		
+		
+	rb_include_module( rb_cFastXmlAttrList, rb_mEnumerable );
+	rb_define_method( rb_cFastXmlAttrList, "initialize", fastxml_attrlist_initialize, 0 );
+	rb_define_method( rb_cFastXmlAttrList, "[]", fastxml_attrlist_indexer, 1 );
+	rb_define_method( rb_cFastXmlAttrList, "[]=", fastxml_attrlist_indexer_set, 2 );
+	rb_define_method( rb_cFastXmlAttrList, "include?", fastxml_attrlist_include, 1 );	
+}
 
 VALUE fastxml_attrlist_initialize(VALUE self)
 {

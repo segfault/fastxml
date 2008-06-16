@@ -30,14 +30,25 @@ describe FastXml::Node, ' functionality' do
     @node.children.should_not be_nil
   end
   
+  it 'should provide a children accessor that includes Enumerable' do
+    @node.children.kind_of?( Enumerable )
+    @node.children.respond_to?( :each ).should == true
+    @node.children.respond_to?( :first ).should == true
+    @node.children.respond_to?( :last ).should == true
+    @node.children.respond_to?( :length ).should == true
+  end
+  
   it 'should provide a name accessor' do
     @node.should respond_to( :name )
     @node.name.should_not be_nil
+    @node.name.kind_of?(String).should == true
+    @node.name.length.should > 0
   end
   
   it 'should provide a to_s method' do
     @node.should respond_to( :to_s )
     @node.to_s.should_not be_nil
+    @node.to_s.kind_of?(String).should == true
     @node.to_s.length.should > 0
   end
 
@@ -52,6 +63,8 @@ describe FastXml::Node, ' functionality' do
   it 'should provide an inspect method' do
     @node.should respond_to( :inspect )
     @node.inspect.should_not be_nil
+    @node.inspect.kind_of?(String)
+    @node.inspect.length.should > 0
   end  
   
   it 'should provide an attribute accessor method named attr' do
@@ -67,6 +80,7 @@ describe FastXml::Node, ' functionality' do
     @node.attr[:ab] = "test"
     @node.attr[:ab].should == "test"
     @node.attr["ab"].should == "test"
+    @node.attr["ab"].kind_of?(String).should == true
   end
   
   it 'should provide a next method' do
@@ -85,16 +99,19 @@ describe FastXml::Node, ' functionality' do
   it 'should provide an xpath method returning the xpath to the node' do
     @node.should respond_to( :xpath )
     @node.xpath.should_not be_nil
+    @node.xpath.kind_of?(String).should == true
   end
   
   it 'should provide a parent method' do
     @node.should respond_to( :parent )
     @node.parent.should_not be_nil
+    @node.parent.kind_of?(FastXml::Node).should == true
   end
   
   it 'should provide an inner_xml method' do
     @node.should respond_to( :inner_xml )
     @node.inner_xml.should_not be_nil
+    @node.inner_xml.kind_of?(String).should == true
   end
   
   it 'should provide a children_of_type method' do
@@ -109,6 +126,7 @@ describe FastXml::Node, ' functionality' do
   it 'should provide a content accessor' do
     @node.should respond_to( :content )
     @node.content.should_not be_nil
+    @node.content.kind_of?(String).should == true
   end
   
   it 'should provide a content mutator' do
@@ -116,5 +134,6 @@ describe FastXml::Node, ' functionality' do
     @node.content = "test"
     @node.content.should_not be_nil
     @node.content.should == "test"
+    @node.content.kind_of?(String).should ==  true
   end
 end

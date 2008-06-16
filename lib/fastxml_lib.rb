@@ -1,9 +1,14 @@
-# $Id$
+# FastXml Ruby-Side Includes
+#  Ruby code that's defines some FastXml functionality.
+# This is included into the FastXml class structure when it's
+# initially loaded.
 module FastXml
   VERSION = "0.1.92" 
+  module Include #:nodoc:
+  end
 end
 
-module FastXml::Common
+module FastXml::Common #:nodoc: all
   def children_of_type(type)
     self.search( "//#{type}" )
   end
@@ -25,7 +30,7 @@ module FastXml::Common
   alias :to_s :display
 end
 
-class FastXml::Doc
+module FastXml::Include::Doc #:nodoc:
   include FastXml::Common
   
   def doc?
@@ -49,14 +54,14 @@ class FastXml::Doc
   end
 end
 
-class FastXml::Node
+module FastXml::Include::Node #:nodoc:
   include FastXml::Common
   def doc?
     false
   end
 end
 
-class FastXml::NodeList
+module FastXml::Include::NodeList #:nodoc:
   def [](idx)
     self.entry(idx)
   end
@@ -81,13 +86,3 @@ class FastXml::NodeList
   end
 end
 
-
-def FastXml(data=nil, opts = {}, &blk)
-  FastXml::Doc.new( data, opts, &blk )
-end
-
-def FastHtml(data=nil, opts = {}, &blk)
-  opts ||= {}
-  opts[:html] = true
-  FastXml::Doc.new( data, opts, &blk )
-end

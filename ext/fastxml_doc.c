@@ -1,13 +1,47 @@
 /*
- *  $Id$
+ * Document-class: FastXml::Doc
+ * Wraps a libxml xml document in memory, providing methods
+ * to modify and extract data from the document.
+ *
+ * Example:
+ *  doc = FastXml( docfile ) # parse the docfile into memory
+ *  puts "first node"
+ *  puts "name = value (text node inside of the element)"
+ *  puts "%s = %s" % [ doc.children.first.name, doc.children.first.content ]
+ *  doc.children.each do |node|
+ *  	puts node.inspect
+ *  end
  */
+// Please see the LICENSE file for licensing and distribution information
+
 #include "fastxml.h"
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
 #include "fastxml_nodelist.h"
 
-
 /* {{{ fastxml_doc 
+ */
+void Init_fastxml_doc()
+{
+	#ifdef RDOC_SHOULD_BE_SMARTER__THIS_IS_NEVER_RUN
+    rb_mFastXml = rb_define_module( "FastXml" );
+	#endif 
+	rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );  
+	
+	rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, -1 );
+    rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
+    rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
+    rb_define_method( rb_cFastXmlDoc, "root", fastxml_doc_root, 0 ); 
+	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
+	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
+	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
+	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );	
+	rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
+}
+
+
+/* Returns a friendly summary of the doc
+ *
  */
 VALUE fastxml_doc_inspect(VALUE self)
 {
@@ -21,6 +55,9 @@ VALUE fastxml_doc_inspect(VALUE self)
     return rb_f_sprintf( 4, argv );
 }
 
+/* Returns an Array containing FastXml::Node representations
+ * of the child elements of the doc. They are provided in the order they are found.
+ */ 
 VALUE fastxml_doc_children(VALUE self)
 {
 	VALUE dv;
@@ -35,11 +72,17 @@ VALUE fastxml_doc_children(VALUE self)
 	return fastxml_nodelist_to_obj( data->doc->children, -1 );
 }
 
+/* Returns the FastXml::Doc that's defined as the xsl for this document
+ */
 VALUE fastxml_doc_stylesheet(VALUE self)
 {
 	return rb_iv_get( self, "@lxml_style" );
 }
 
+/* 
+ * call-seq:
+ *   doc.stylesheet = FastXml::Doc.new( open( 'my.xsl' ) )
+ */
 VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style)
 {
 	VALUE dv, xslt_doc;
@@ -55,6 +98,12 @@ VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style)
 	return Qnil;	
 }
 
+/* Applys an XSLT to the target FastXml::Doc.
+ * Returns the resulting FastXml::Doc
+ * 
+ * call-seq:
+ *   doc.transform FastXml::Doc.new( open( 'my.xslt' ) ) 
+ */
 VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 {
 	VALUE ret, dv, xform_dv, ret_str, ret_dv;
@@ -83,11 +132,23 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	return ret;
 }
 
+/* Evaluates an xpath query and returns a list of nodes
+ * that match.
+ *
+ * call-seq:
+ *   doc.search( "//nodes" ).each { |n| puts n.inspect }
+ */
 VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath, VALUE blk)
 {
 	return fastxml_xpath_search( self, raw_xpath, blk );
 }
 
+/* Returns the string representation of the xml document.
+ * Basically a wrapper around xmlDocDumpFormatMemory
+ *
+ * call-seq:
+ *   puts doc.to_s
+ */
 VALUE fastxml_doc_to_s(VALUE self)
 {
     VALUE ret, dv;
@@ -106,6 +167,12 @@ VALUE fastxml_doc_to_s(VALUE self)
     return ret; 
 }
 
+/* Returns the FastXml::Node object representing the root element of
+ * the target document
+ *
+ * call-seq:
+ *   puts doc.root.name
+ */
 VALUE fastxml_doc_root(VALUE self)
 {
     VALUE dv;
@@ -120,6 +187,18 @@ VALUE fastxml_doc_root(VALUE self)
     return fastxml_raw_node_to_obj( root );
 }
 
+/* Parse an input string/array/stringio object into a FastXml::Doc object.
+ * 
+ * call-seq:
+ *   doc = FastXml::Doc.new( open( "test.xml" ) )
+ *   doc = FastXml::Doc.new( open( "test.xml" ).readlines )
+ *   doc = FastXml::Doc.new( "<test><node>taco</node></test>" )
+ *   doc = FastXml::Doc.new( open( "test.xml" ), { :forgiving => true } ) # turn on the forgiving/liberal libxml parser
+ *   doc = FastXml::Doc.new( open( "test.xml" ), { :validate_dtd => true } ) # turn on strict dtd parsing and loading, invalid xml will cause an exception.
+ *   FastXml::Doc.new( open( "test.xml" ) ) do |doc|
+ *     doc.children.each { |child_node| puts child_node.name }
+ *   end
+ */
 VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
 {
     VALUE data_s, dv, lines, xml_doc_str, opts, blk;

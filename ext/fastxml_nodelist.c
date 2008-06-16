@@ -1,6 +1,8 @@
 /*
- *  $Id: fastxml_node.c 29 2007-08-16 05:16:47Z segfault $
+ * Document-class: FastXml::NodeList
+ *
  */
+// Please see the LICENSE file for licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"
@@ -9,6 +11,21 @@
 
 /* {{{ fastxml_nodelist
  */
+void Init_fastxml_nodelist()
+{
+	#ifdef RDOC_SHOULD_BE_SMARTER__THIS_IS_NEVER_RUN
+    rb_mFastXml = rb_define_module( "FastXml" );
+	#endif
+    rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
+	
+    rb_include_module( rb_cFastXmlNodeList, rb_mEnumerable );	
+    rb_define_method( rb_cFastXmlNodeList, "initialize", fastxml_nodelist_initialize, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "length", fastxml_nodelist_length, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "each", fastxml_nodelist_each, 0 );
+    rb_define_method( rb_cFastXmlNodeList, "entry", fastxml_nodelist_entry, 1 );
+	rb_define_method( rb_cFastXmlNodeList, "to_ary", fastxml_nodelist_entry, 0 );
+}
+
 VALUE fastxml_nodelist_inspect(VALUE self)
 {
     VALUE dv;

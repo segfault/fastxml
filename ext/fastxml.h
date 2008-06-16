@@ -40,8 +40,10 @@ typedef struct {
 
 
 #ifndef fastxml_c
+RUBY_EXTERN VALUE rb_mFastXml;
 RUBY_EXTERN VALUE rb_cFastXmlDoc;
 RUBY_EXTERN VALUE rb_cFastXmlNode;
+RUBY_EXTERN VALUE rb_cFastXmlNodeList;
 RUBY_EXTERN VALUE rb_cFastXmlAttrList;
 
 RUBY_EXTERN VALUE rb_sValidateDtd;

@@ -1,9 +1,11 @@
 /*
- * $Id$
+ * Prototypes for everything in fastxml_node.c
  */
 
 #ifndef fastxml_node_h
 #define fastxml_node_h
+extern void Init_fastxml_node();
+
 RUBY_EXTERN VALUE fastxml_node_initialize(VALUE self);
 RUBY_EXTERN VALUE fastxml_node_search(VALUE self,VALUE raw_xpath, VALUE blk);
 RUBY_EXTERN VALUE fastxml_node_name(VALUE self);

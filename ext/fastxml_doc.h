@@ -1,9 +1,13 @@
 /*
- * $Id$
+ * Prototypes for everything in fastxml_doc.c
+ *
+ * Please see the LICENSE file for licensing and distribution information
  */
 
 #ifndef fastxml_doc_h
 #define fastxml_doc_h
+extern void Init_fastxml_doc();
+
 RUBY_EXTERN VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self);
 RUBY_EXTERN VALUE fastxml_doc_search(VALUE self, VALUE raw_xpath, VALUE blk);
 RUBY_EXTERN VALUE fastxml_doc_to_s(VALUE self);

@@ -1,13 +1,19 @@
-/*
- *  $Id$
+/* Document-class: FastXml
+ *  Provides the base namespace for the FastXml classes
+ *   # FastXml::Doc
+ *   # FastXml::Node
+ *   # FastXml::NodeList
+ *   # FastXml::AttrList
  */
-#define fastxml_c
+
+#define fastxml_c 1
 #include "fastxml.h"
 #include "fastxml_node.h"
 #include "fastxml_doc.h"
 #include "fastxml_nodelist.h"
 #include "fastxml_attrlist.h"
 
+VALUE rb_mFastXml;
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;
 VALUE rb_cFastXmlNodeList;
@@ -20,6 +26,8 @@ ID s_to_s;
 
 void Init_fastxml()
 {
+	VALUE rb_mFastXmlIncludeDoc, rb_mFastXmlIncludeNode, rb_mFastXmlIncludeNodeList;
+	
     if (xmlHasFeature(XML_WITH_TREE) == 0)
         rb_raise( rb_eRuntimeError, "libxml not built with tree support" );
 
@@ -31,12 +39,13 @@ void Init_fastxml()
 
     xmlInitParser();
     xmlXPathInit();
-    VALUE rb_mFastXml = rb_define_module( "FastXml" );
+    rb_mFastXml = rb_define_module( "FastXml" );
+    VALUE rb_mFastXmlInclude = rb_define_module_under( rb_mFastXml, "Include" );
     rb_define_const( rb_mFastXml, "LIBXML_VERSION", rb_str_new2( LIBXML_DOTTED_VERSION ) );
-    rb_cFastXmlDoc = rb_define_class_under( rb_mFastXml, "Doc", rb_cObject );        
-    rb_cFastXmlNode = rb_define_class_under( rb_mFastXml, "Node", rb_cObject );
-    rb_cFastXmlNodeList = rb_define_class_under( rb_mFastXml, "NodeList", rb_cObject );
-	rb_cFastXmlAttrList = rb_define_class_under( rb_mFastXml, "AttrList", rb_cObject );
+	
+	rb_mFastXmlIncludeDoc = rb_define_module_under( rb_mFastXmlInclude, "Doc" );
+	rb_mFastXmlIncludeNode = rb_define_module_under( rb_mFastXmlInclude, "Node" );
+	rb_mFastXmlIncludeNodeList = rb_define_module_under( rb_mFastXmlInclude, "NodeList" );
 
     /* setting symbols */
     rb_sValidateDtd = ID2SYM( rb_intern("validate") );
@@ -44,49 +53,25 @@ void Init_fastxml()
     rb_sHtmlParse = ID2SYM( rb_intern("html") );
     
     /* Doc */
-    rb_define_method( rb_cFastXmlDoc, "initialize", fastxml_doc_initialize, -1 );
-    rb_define_method( rb_cFastXmlDoc, "search", fastxml_doc_search, 1 );
-    rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
-    rb_define_method( rb_cFastXmlDoc, "root", fastxml_doc_root, 0 );
-	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
-	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
-	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
-	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );
-    rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
+	Init_fastxml_doc();
     
     /* Node */
-    rb_define_method( rb_cFastXmlNode, "initialize", fastxml_node_initialize, 0 );
-    rb_define_method( rb_cFastXmlNode, "search", fastxml_node_search, 1 );
-    rb_define_method( rb_cFastXmlNode, "to_s", fastxml_node_to_s, 0 );
-    rb_define_method( rb_cFastXmlNode, "name", fastxml_node_name, 0 );
-    rb_define_method( rb_cFastXmlNode, "content", fastxml_node_value, 0 );
-    rb_define_method( rb_cFastXmlNode, "content=", fastxml_node_value_set, 1 );
-    rb_define_method( rb_cFastXmlNode, "inner_xml", fastxml_node_innerxml, 0 );
-	rb_define_method( rb_cFastXmlNode, "xpath", fastxml_node_xpath, 0 );
-	rb_define_method( rb_cFastXmlNode, "attr", fastxml_node_attr, 0 );
-	rb_define_method( rb_cFastXmlNode, "children", fastxml_node_children, 0 );
-	rb_define_method( rb_cFastXmlNode, "next", fastxml_node_next, 0 );	
-	rb_define_method( rb_cFastXmlNode, "prev", fastxml_node_prev, 0 );	
-	rb_define_method( rb_cFastXmlNode, "parent", fastxml_node_parent, 0 );	
-    rb_define_method( rb_cFastXmlNode, "inspect", fastxml_node_inspect, 0 );
+	Init_fastxml_node();
 
 	/* NodeList */
-    rb_include_module( rb_cFastXmlNodeList, rb_mEnumerable );	
-    rb_define_method( rb_cFastXmlNodeList, "initialize", fastxml_nodelist_initialize, 0 );
-    rb_define_method( rb_cFastXmlNodeList, "length", fastxml_nodelist_length, 0 );
-    rb_define_method( rb_cFastXmlNodeList, "each", fastxml_nodelist_each, 0 );
-    rb_define_method( rb_cFastXmlNodeList, "entry", fastxml_nodelist_entry, 1 );
-	rb_define_method( rb_cFastXmlNodeList, "to_ary", fastxml_nodelist_entry, 0 );
+	Init_fastxml_nodelist();
 	
 	/* AttrList */
-	rb_include_module( rb_cFastXmlAttrList, rb_mEnumerable );
-	rb_define_method( rb_cFastXmlAttrList, "initialize", fastxml_attrlist_initialize, 0 );
-	rb_define_method( rb_cFastXmlAttrList, "[]", fastxml_attrlist_indexer, 1 );
-	rb_define_method( rb_cFastXmlAttrList, "[]=", fastxml_attrlist_indexer_set, 2 );
-	rb_define_method( rb_cFastXmlAttrList, "include?", fastxml_attrlist_include, 1 );
+	Init_fastxml_attrlist();
 	
+	/* pull in the ruby side of things */
 	rb_require( "lib/fastxml_lib" );
-
+	rb_require( "lib/fastxml_helpers" );
+	
+	/* now let's merge those include modules into the main classes */
+    rb_include_module( rb_cFastXmlDoc, rb_mFastXmlIncludeDoc );	
+    rb_include_module( rb_cFastXmlNode, rb_mFastXmlIncludeNode );	
+    rb_include_module( rb_cFastXmlNodeList, rb_mFastXmlIncludeNodeList );
 }
 
 
