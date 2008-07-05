@@ -9,7 +9,7 @@
  *  doc.children.first.content = "new inner text" # assigns that inner text
  *  doc.children.first.children # gather a list of node's immediately beneith the target node
  */
-// Please see the LICENSE file for licensing and distribution information
+// Please see the LICENSE file for copyright, licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"

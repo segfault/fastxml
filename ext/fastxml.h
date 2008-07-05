@@ -1,5 +1,6 @@
-/*
- *  $Id$
+/* Provides common headers and definitions for the FastXml ruby extension
+ *
+ *  Please see the LICENSE file for copyright, licensing and distribution information
  */
 
 #ifndef fastxml_h

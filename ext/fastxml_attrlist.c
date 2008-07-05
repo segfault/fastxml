@@ -1,8 +1,14 @@
 /*
  * Document-class: FastXml::AttrList
  *
+ * call-seq:
+ *  doc = FastXml( docfile ) # from FastXml::Doc
+ *  n = doc.root             # pull the root node 
+ *  attrlist = n.attr        # pull the FastXml::AttrList for the node
+ *  puts attrlist[:some_attr]
+ *  puts attrlist["some_attr"]
  */
-// Please see the LICENSE file for licensing and distribution information
+// Please see the LICENSE file for copyright, licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"
@@ -31,6 +37,13 @@ VALUE fastxml_attrlist_initialize(VALUE self)
     return self;
 }
 
+/* Returns the value of the attribute with the provided attr_name
+ * as a string.
+ * nil if the attribute does not exist.
+ *
+ * call-seq:
+ *   puts node.attr[:an_attr_name]
+ */
 VALUE fastxml_attrlist_indexer(VALUE self, VALUE attr_name)
 {
 	VALUE ret, dv, attr_raw_str;
@@ -55,6 +68,13 @@ VALUE fastxml_attrlist_indexer(VALUE self, VALUE attr_name)
 	return ret;
 }
 
+/* Assignes a value to the attribute with the provided attr_name.
+ * if the value provided is nil, the attribute is removed from the element.
+ * 
+ * call-seq:
+ *  node.attr[:an_attr_name] = "testing" # adds the attribute if it doesn't exist
+ *  node.attr[:an_attr_name] = nil       # removes the attribute if it exists
+ */
 VALUE fastxml_attrlist_indexer_set(VALUE self, VALUE attr_name, VALUE attr_value)
 {
 	VALUE dv, attr_raw_str;
@@ -82,6 +102,12 @@ VALUE fastxml_attrlist_indexer_set(VALUE self, VALUE attr_name, VALUE attr_value
 	return attr_value;
 }
 
+/* Returns True if the FastXml::AttrList contains an attribute
+ * with the specified attr_name. Returns nil otherwise.
+ *
+ * call-seq:
+ *  puts "FAIL" unless node.attr.include?(:a_required_node)
+ */
 VALUE fastxml_attrlist_include(VALUE self, VALUE attr_name)
 {
 	VALUE ret, dv, attr_raw_str;

@@ -1,7 +1,7 @@
 /*
  * Prototypes for everything in fastxml_attrlist.c
  *
- * Please see the LICENSE file for licensing and distribution information
+ * Please see the LICENSE file for copyright, licensing and distribution information
  */
 
 #ifndef fastxml_attrlist_h

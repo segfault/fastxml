@@ -12,7 +12,7 @@
  *  	puts node.inspect
  *  end
  */
-// Please see the LICENSE file for licensing and distribution information
+// Please see the LICENSE file for copyright, licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"

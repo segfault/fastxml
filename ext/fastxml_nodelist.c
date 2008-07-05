@@ -1,8 +1,14 @@
 /*
  * Document-class: FastXml::NodeList
  *
+ * call-seq:
+ *  doc = FastXml( docfile ) # from FastXml::Doc
+ *  list = doc.root.children # pull the FastXml::NodeList comprised of the Element's children
+ *  puts "The document root element has %d children." % list.length
+ *  list.each { |e| puts e.name } # iterate over each element and print it's name
+ *  puts list[3]                  # print the 4th element in the list 
  */
-// Please see the LICENSE file for licensing and distribution information
+// Please see the LICENSE file for copyright, licensing and distribution information
 
 #include "fastxml.h"
 #include "fastxml_node.h"
@@ -48,6 +54,11 @@ VALUE fastxml_nodelist_initialize(VALUE self)
     return self;
 }
 
+/* Return the length of the FastXml::NodeList
+ *
+ * call-seq:
+ *   puts doc.children.length
+ */
 VALUE fastxml_nodelist_length(VALUE self)
 {
     VALUE dv;
@@ -138,6 +149,11 @@ VALUE fastxml_nodelist_to_ary(VALUE self)
 	return fastxml_nodelist_gen_list( self, data );		
 }
 
+/* Iterate over the list yielding each FastXml::Node contained
+ *
+ * call-seq:
+ *   puts doc.children.each { |e| puts e.name }
+ */
 VALUE fastxml_nodelist_each(VALUE self)
 {
 	VALUE lst, dv;
@@ -155,6 +171,14 @@ VALUE fastxml_nodelist_each(VALUE self)
 	return self;
 }
 
+/* Returns the element (FastXml::Node) from the FastXml::NodeList at idx 
+ * position. 0-based indexing. Ranges are not supported as of yet 
+ * (Patches welcome).
+ *
+ * call-seq:
+ *   puts doc.children[0]  # 
+ *   puts doc.children[-1] # last element in the list
+ */
 VALUE fastxml_nodelist_entry(VALUE self, long idx)
 {
 	VALUE lst, dv;

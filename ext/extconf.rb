@@ -1,3 +1,8 @@
+# mkmf config for the FastXml ruby extension
+# Please see the LICENSE file for copyright, licensing and distribution information
+
+# FastXml depends on libxml and libxslt
+
 require 'mkmf'
 ext_name = 'fastxml'
 dir_config ext_name

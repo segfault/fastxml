@@ -5,6 +5,7 @@
  *   # FastXml::NodeList
  *   # FastXml::AttrList
  */
+// Please see the LICENSE file for copyright, licensing and distribution information
 
 #define fastxml_c 1
 #include "fastxml.h"
@@ -45,17 +46,10 @@ void Init_fastxml()
     rb_sForgivingParse = ID2SYM( rb_intern("forgiving") );
     rb_sHtmlParse = ID2SYM( rb_intern("html") );
     
-    /* Doc */
-	Init_fastxml_doc();
-    
-    /* Node */
-	Init_fastxml_node();
-
-	/* NodeList */
-	Init_fastxml_nodelist();
-	
-	/* AttrList */
-	Init_fastxml_attrlist();
+	Init_fastxml_doc();       /* Doc */    
+	Init_fastxml_node();      /* Node */
+	Init_fastxml_nodelist();  /* NodeList */
+	Init_fastxml_attrlist();  /* AttrList */
 	
 	/* pull in the ruby side of things */
 	rb_require( "lib/fastxml_lib" );      // ruby-side methods for the FastXml classes
@@ -173,6 +167,12 @@ VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
 	return rb_ary_join( ret_ary, slash );
 }
 
+
+/**
+ *  fastxml_xpath_search provides a common xpath search function for
+ * the libraries bits (node, doc). it handles mangling non-namespaced
+ * xpath queries into something libxml will play nice with
+ */
 VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk)
 {
     VALUE ret, dv, xpath_s;

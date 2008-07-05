@@ -2,6 +2,8 @@
 #  Ruby code that's defines some FastXml functionality.
 # This is included into the FastXml class structure when it's
 # initially loaded.
+#
+# Please see the LICENSE file for copyright, licensing and distribution information
 module FastXml
   VERSION = "0.1.92" 
   module Include #:nodoc:
@@ -33,6 +35,7 @@ end
 class FastXml::Doc
   include FastXml::Common
   
+  # returns True if this object is an xml document
   def doc?
     true
   end

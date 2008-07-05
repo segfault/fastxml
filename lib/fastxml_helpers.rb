@@ -1,4 +1,6 @@
 # Easy to remember common aliases ala Hpricot...
+#
+# Please see the LICENSE file for copyright, licensing and distribution information
 
 # Alias for FastXml::Doc.new
 def FastXml(data=nil, opts = {}, &blk)
