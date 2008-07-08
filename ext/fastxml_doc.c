@@ -123,9 +123,9 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 
 	ret_doc = (xmlDocPtr)xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
 	ret_str = rb_str_new2( "<shouldNeverBeSeen/>" );
-	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc );
+	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc ); // provide an xml snipped temporarily
 	ret_dv = rb_iv_get( ret, "@lxml_doc" );
-	Data_Get_Struct( ret_dv, fxml_data_t, ret_data );
+	Data_Get_Struct( ret_dv, fxml_data_t, ret_data ); // replace the associated doc with the new one from the transform
 	xmlFree( ret_data->doc );
 	ret_data->doc = ret_doc;
 	

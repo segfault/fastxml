@@ -79,4 +79,22 @@ describe FastXml::Doc, " functionality" do
     rlm.to_s.should == @doc.to_s
     rlm.should_not == @doc
   end
+  
+  it 'should be able to have an xsl assigned' do
+    doc = FastXml( open("./test_data/transform_base.xml") )
+    doc.should_not be_nil
+    tran = FastXml( open("./test_data/transform.xsl") )
+    tran.should_not be_nil
+    doc.stylesheet = tran
+    doc.stylesheet.should_not be_nil
+  end  
+  
+  it 'should be able to have an xslt assigned' do
+    doc = FastXml( open("./test_data/transform_base.xml") )
+    doc.should_not be_nil
+    tran = FastXml( open("./test_data/transform.xsl") )
+    tran.should_not be_nil
+    result = doc.transform( tran )
+    result.should_not be_nil
+  end
 end
