@@ -33,8 +33,6 @@ void Init_fastxml_doc()
     rb_define_method( rb_cFastXmlDoc, "to_s", fastxml_doc_to_s, 0 );
     rb_define_method( rb_cFastXmlDoc, "root", fastxml_doc_root, 0 ); 
 	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
-	rb_define_method( rb_cFastXmlDoc, "stylesheet=", fastxml_doc_stylesheet_set, 1 );
-	rb_define_method( rb_cFastXmlDoc, "stylesheet", fastxml_doc_stylesheet, 0 );
 	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );	
 	rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
 }
@@ -72,32 +70,6 @@ VALUE fastxml_doc_children(VALUE self)
 	return fastxml_nodelist_to_obj( data->doc->children, -1 );
 }
 
-/* Returns the FastXml::Doc that's defined as the xsl for this document
- */
-VALUE fastxml_doc_stylesheet(VALUE self)
-{
-	return rb_iv_get( self, "@lxml_style" );
-}
-
-/* 
- * call-seq:
- *   doc.stylesheet = FastXml::Doc.new( open( 'my.xsl' ) )
- */
-VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style)
-{
-	VALUE dv, xslt_doc;
-	fxml_data_t *data;
-
-    xslt_doc = rb_class_new_instance(1, &style, rb_cFastXmlDoc );
-	
-    dv = rb_iv_get( xslt_doc, "@lxml_doc" );    
-    Data_Get_Struct( dv, fxml_data_t, data );
-	data->xslt = xsltParseStylesheetDoc( data->doc );
-	rb_iv_set( self, "@lxml_style", xslt_doc );
-	
-	return Qnil;	
-}
-
 /* Applys an XSLT to the target FastXml::Doc.
  * Returns the resulting FastXml::Doc
  * 
@@ -109,6 +81,7 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	VALUE ret, dv, xform_dv, ret_str, ret_dv;
 	fxml_data_t *my_data, *xf_data, *ret_data;
 	xmlDocPtr ret_doc;
+	xsltStylesheetPtr style;
 
 	if (xform == Qnil)
 		return Qnil;
@@ -118,16 +91,23 @@ VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 	xform_dv = rb_iv_get( xform, "@lxml_doc" );
 	Data_Get_Struct( xform_dv, fxml_data_t, xf_data );
 	
-	if (xf_data->xslt == NULL)
+	if (xf_data->doc == NULL)
 		return Qnil;
+		
+	if (xf_data->xslt == NULL) {
+		style = xsltParseStylesheetDoc( xf_data->doc );
+		if (style == NULL) 
+			return Qnil; // TODO: this should throw a FastXml exception
+	}
 
-	ret_doc = (xmlDocPtr)xsltApplyStylesheet( xf_data->xslt, my_data->doc, NULL );
+	ret_doc = (xmlDocPtr)xsltApplyStylesheet( style, my_data->doc, NULL );
 	ret_str = rb_str_new2( "<shouldNeverBeSeen/>" );
 	ret = rb_class_new_instance( 1, &ret_str, rb_cFastXmlDoc ); // provide an xml snipped temporarily
 	ret_dv = rb_iv_get( ret, "@lxml_doc" );
 	Data_Get_Struct( ret_dv, fxml_data_t, ret_data ); // replace the associated doc with the new one from the transform
 	xmlFree( ret_data->doc );
 	ret_data->doc = ret_doc;
+	
 	
 	return ret;
 }

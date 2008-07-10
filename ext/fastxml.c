@@ -38,6 +38,7 @@ void Init_fastxml()
 
     xmlInitParser();
     xmlXPathInit();
+	xsltInit();
     rb_mFastXml = rb_define_module( "FastXml" );
     rb_define_const( rb_mFastXml, "LIBXML_VERSION", rb_str_new2( LIBXML_DOTTED_VERSION ) );
 
@@ -71,6 +72,9 @@ void fastxml_data_free( fxml_data_t *data )
 		if (data->xpath_obj != NULL) 
 			xmlXPathFreeObject( data->xpath_obj );			
 	
+		if (data->xslt != NULL)
+			xsltFreeStylesheet( data->xslt );
+	
         if (data->doc != NULL && data->node == NULL && data->list == NULL && data->xpath_obj == NULL) 
             xmlFreeDoc( data->doc );
 
@@ -79,6 +83,7 @@ void fastxml_data_free( fxml_data_t *data )
 		data->xpath_obj = NULL;
 		data->list = NULL;
         data->doc = NULL;
+		data->xslt = NULL;
 		data->node = NULL;
         free( data );
     }

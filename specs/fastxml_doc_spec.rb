@@ -80,21 +80,31 @@ describe FastXml::Doc, " functionality" do
     rlm.should_not == @doc
   end
   
-  it 'should be able to have an xsl assigned' do
-    doc = FastXml( open("./test_data/transform_base.xml") )
-    doc.should_not be_nil
-    tran = FastXml( open("./test_data/transform.xsl") )
-    tran.should_not be_nil
-    doc.stylesheet = tran
-    doc.stylesheet.should_not be_nil
-  end  
+  it 'should provide an xml stylesheet transform method' do
+    @doc.should respond_to( :transform )
+  end
   
-  it 'should be able to have an xslt assigned' do
+  it 'should be able to be transformed using another xml document (xslt)' do
     doc = FastXml( open("./test_data/transform_base.xml") )
     doc.should_not be_nil
     tran = FastXml( open("./test_data/transform.xsl") )
     tran.should_not be_nil
+    tran.to_s.should_not be_nil
+    tran.to_s.length.should > 5
+    
     result = doc.transform( tran )
     result.should_not be_nil
+    names = (result/"/name")
+    names.should_not be_nil
+    names.length.should == 2
+    result.to_s.should_not be_nil
+    result.to_s.length.should > 5
+  end
+  
+  it 'should return when a nil transform is applied' do
+    doc = FastXml( open("./test_data/transform_base.xml") )
+    doc.should_not be_nil
+    res = doc.transform( nil )
+    res.should be_nil
   end
 end
