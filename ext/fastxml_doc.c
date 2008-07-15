@@ -71,10 +71,11 @@ VALUE fastxml_doc_children(VALUE self)
 }
 
 /* Applys an XSLT to the target FastXml::Doc.
- * Returns the resulting FastXml::Doc
+ * Returns the resulting FastXml::Doc, which may not be well-formed xml
  * 
  * call-seq:
- *   doc.transform FastXml::Doc.new( open( 'my.xslt' ) ) 
+ *   result = doc.transform FastXml::Doc.new( open( 'my.xslt' ) ) 
+ *   puts result.to_s  
  */
 VALUE fastxml_doc_transform(VALUE self, VALUE xform)
 {
