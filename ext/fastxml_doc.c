@@ -224,10 +224,10 @@ VALUE fastxml_doc_initialize(int argc, VALUE* argv, VALUE self)
     memset( data, (int)NULL, sizeof(fxml_data_t) );
 
     if (html_parser == 0)
-        data->doc = xmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len, 
+        data->doc = xmlReadMemory( RSTRING_PTR(data_s), RSTRING_LEN(data_s), 
                                "noname.xml", NULL, parser_opts );
     else
-        data->doc = htmlReadMemory( RSTRING(data_s)->ptr, RSTRING(data_s)->len,
+        data->doc = htmlReadMemory( RSTRING_PTR(data_s), RSTRING_LEN(data_s),
                                     "noname.html", NULL, HTML_PARSE_RECOVER | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING );
 
     // if we're mallformed we might want to use xmlRecoverMemcory(char*, int)

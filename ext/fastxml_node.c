@@ -205,7 +205,6 @@ VALUE fastxml_node_attr(VALUE self)
 {
 	VALUE self_dv, ret;
 	fxml_data_t *data;
-	xmlChar *raw_ret;
 
 	ret = rb_iv_get( self, "@attrs" );
 	if (ret == Qnil) {

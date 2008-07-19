@@ -110,7 +110,7 @@ VALUE fastxml_attrlist_indexer_set(VALUE self, VALUE attr_name, VALUE attr_value
  */
 VALUE fastxml_attrlist_include(VALUE self, VALUE attr_name)
 {
-	VALUE ret, dv, attr_raw_str;
+	VALUE dv, attr_raw_str;
 	fxml_data_t *data;
 	xmlChar *raw_ret, *name_str;
 	

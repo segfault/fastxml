@@ -160,7 +160,7 @@ VALUE munge_xpath_namespace( VALUE orig_expr, xmlChar *root_ns )
     for (i=0; i<RARRAY(path_bits)->len; i++) {
         path_bit = RARRAY(path_bits)->ptr[i];
 		
-		if (RSTRING(path_bit)->len > 0) {
+		if (RSTRING_LEN(path_bit) > 0) {
 			str_idx = rb_funcall( path_bit, rb_intern( "index" ), 1, ns_indic );
 			if (str_idx == Qnil || str_idx == Qfalse) // didn't find the :, so it looks like we don't have a namespace
 				path_bit = rb_str_plus( ns_prefix, path_bit );
@@ -231,7 +231,7 @@ VALUE fastxml_xpath_search(VALUE self, VALUE raw_xpath, VALUE blk)
 		xpath_ctx->nsNr++;
 	}
 	
-	xpath_expr = (xmlChar*)RSTRING(xpath_s)->ptr;
+	xpath_expr = (xmlChar*)RSTRING_PTR(xpath_s);
 	xpath_xpr = xmlXPathCompile( xpath_expr );
 	if (xpath_xpr == NULL) {
 		xmlXPathFreeContext( xpath_ctx );
