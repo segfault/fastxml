@@ -1,4 +1,4 @@
-# $Id$
+# encoding: utf-8
 $: << '../ext'
 $: << './ext'
 

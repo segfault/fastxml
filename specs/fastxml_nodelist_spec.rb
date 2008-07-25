@@ -1,3 +1,4 @@
+# encoding: utf-8
 $: << '../ext'
 $: << './ext'
 
@@ -25,6 +26,11 @@ describe FastXml::NodeList, ' functionality' do
   it 'should have an entry method ala Array' do
     @list.entry(0).should_not be_nil
     @list.entry(0).should == @list[0]
+  end
+  
+  it 'entry should not explode when faced with insane indexes' do
+    @list.entry(99999999**99999).should be_nil
+    @list.entry(0x3fffffff).should be_nil
   end
   
   it 'should provide an each method' do

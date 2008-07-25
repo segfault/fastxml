@@ -1,3 +1,4 @@
+# encoding: utf-8
 [ './ext', '../ext', './lib', '../lib' ].each { |l| $: << l }
 require 'rubygems'
 require 'fastxml'

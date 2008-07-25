@@ -1,6 +1,6 @@
 $: << '../ext'
 $: << './ext'
-
+# encoding: utf-8
 require 'fastxml'
 
 describe FastXml::AttrList, ' functionality' do

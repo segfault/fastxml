@@ -3,6 +3,7 @@
 # This is included into the FastXml class structure when it's
 # initially loaded.
 #
+# encoding: utf-8
 # Please see the LICENSE file for copyright, licensing and distribution information
 module FastXml
   VERSION = "0.1.92" 
