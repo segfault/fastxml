@@ -107,4 +107,10 @@ describe FastXml::Doc, " functionality" do
     res = doc.transform( nil )
     res.should be_nil
   end
+  
+  it 'should be able to handle doctype references without looking them up' do
+    doc = FastXml( open("./test_data/clr_test.xml") )
+    doc.should_not be_nil
+    doc.to_s.should_not be_nil
+  end
 end
