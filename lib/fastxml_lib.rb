@@ -6,7 +6,7 @@
 # encoding: utf-8
 # Please see the LICENSE file for copyright, licensing and distribution information
 module FastXml
-  VERSION = "0.1.92" 
+  VERSION = "0.1.93" 
   module Include #:nodoc:
   end
 end
