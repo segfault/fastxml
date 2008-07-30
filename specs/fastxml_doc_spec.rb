@@ -113,4 +113,11 @@ describe FastXml::Doc, " functionality" do
     doc.should_not be_nil
     doc.to_s.should_not be_nil
   end
+  
+  it 'should be to handle empty nodes of various types' do
+    doc = FastXml( open("./test_data/taggables.xml") )
+    doc.should_not be_nil
+    doc.to_s.should_not be_nil
+    (doc/"//tags/tag").length.should >= 5
+  end  
 end
