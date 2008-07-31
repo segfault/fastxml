@@ -43,6 +43,32 @@ describe FastXml::Doc, " functionality" do
     @doc.children.should_not be_nil
   end
   
+  it 'should provide an encoding accessor' do
+    @doc.should respond_to( 'encoding' )
+    @doc.encoding.should_not be_nil
+    @doc.encoding.should == "UTF-8"
+  end
+  
+  it 'should provide an encoding mutator' do
+    @doc.should respond_to( 'encoding=' )
+    old_enc = @doc.encoding
+    @doc.encoding = "UTF-7"
+    @doc.encoding.should_not be_nil
+    @doc.encoding.should == "UTF-7"
+    @doc.encoding = old_enc
+    @doc.encoding.should == old_enc
+  end  
+  
+  it 'should provide an encoding mutator that allows nil' do
+    doc = FastXml::Doc.new( @data_str )
+    doc.should respond_to( 'encoding=' )
+    old_enc = doc.encoding
+    doc.encoding = nil
+    doc.encoding.should be_nil
+    doc.encoding = old_enc
+    doc.encoding.should == old_enc
+  end  
+  
   it 'should be able to run default namespace xpath searches' do
     @doc.should respond_to( :search )
     @doc.search( '/feed/entry' ).length.should > 1

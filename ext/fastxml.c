@@ -14,6 +14,11 @@
 #include "fastxml_nodelist.h"
 #include "fastxml_attrlist.h"
 
+#ifdef _WIN32
+__declspec(dllexport) 
+#endif
+
+
 VALUE rb_mFastXml;
 VALUE rb_cFastXmlDoc;
 VALUE rb_cFastXmlNode;

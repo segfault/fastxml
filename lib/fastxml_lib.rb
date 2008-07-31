@@ -1,12 +1,13 @@
+# encoding: utf-8 # :nodoc:
+
 # FastXml Ruby-Side Includes
 #  Ruby code that's defines some FastXml functionality.
 # This is included into the FastXml class structure when it's
 # initially loaded.
 #
-# encoding: utf-8
 # Please see the LICENSE file for copyright, licensing and distribution information
 module FastXml
-  VERSION = "0.1.93" 
+  VERSION = "0.1.94" 
   module Include #:nodoc:
   end
 end

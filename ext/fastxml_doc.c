@@ -35,6 +35,8 @@ void Init_fastxml_doc()
 	rb_define_method( rb_cFastXmlDoc, "transform", fastxml_doc_transform, 1 );
 	rb_define_method( rb_cFastXmlDoc, "children", fastxml_doc_children, 0 );	
 	rb_define_method( rb_cFastXmlDoc, "inspect", fastxml_doc_inspect, 0 );
+	rb_define_method( rb_cFastXmlDoc, "encoding", fastxml_doc_encoding, 0 );
+	rb_define_method( rb_cFastXmlDoc, "encoding=", fastxml_doc_encoding_set, 1 );	
 }
 
 
@@ -147,6 +149,52 @@ VALUE fastxml_doc_to_s(VALUE self)
 
     return ret; 
 }
+
+/* Return the xml document's encoding name
+ *
+ * call-seq:
+ *   puts doc.encoding
+ */
+VALUE fastxml_doc_encoding(VALUE self)
+{
+    VALUE dv;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (data->doc->encoding == NULL)
+	    return Qnil;
+	  
+	return rb_str_new2( (const char*)data->doc->encoding );
+}
+
+/* Set the xml document's encoding name
+ *
+ * call-seq:
+ *   doc.encoding = "UTF-8"
+ */
+VALUE fastxml_doc_encoding_set(VALUE self, VALUE newenc)
+{
+    VALUE dv, strenc;
+    fxml_data_t *data;
+
+    dv = rb_iv_get( self, "@lxml_doc" );
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	if (newenc == Qnil) {
+		data->doc->encoding = NULL;
+		return newenc;
+	}
+	
+	strenc = newenc;
+	if (rb_respond_to( newenc, s_to_s ))
+		strenc = rb_funcall( newenc, s_to_s, 0 );
+	
+	data->doc->encoding = xmlStrdup( (xmlChar*)RSTRING_PTR(strenc) );
+	return newenc;
+}
+
 
 /* Returns the FastXml::Node object representing the root element of
  * the target document

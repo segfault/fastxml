@@ -17,4 +17,6 @@ RUBY_EXTERN VALUE fastxml_doc_stylesheet(VALUE self);
 RUBY_EXTERN VALUE fastxml_doc_stylesheet_set(VALUE self, VALUE style);
 RUBY_EXTERN VALUE fastxml_doc_children(VALUE self);
 RUBY_EXTERN VALUE fastxml_doc_inspect(VALUE self);
+RUBY_EXTERN VALUE fastxml_doc_encoding(VALUE self);
+RUBY_EXTERN VALUE fastxml_doc_encoding_set(VALUE self, VALUE newenc);
 #endif
