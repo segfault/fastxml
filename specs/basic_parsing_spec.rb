@@ -51,5 +51,14 @@ describe FastXml::Doc, " when created" do
     doc.to_s.should_not be_nil
     doc.to_s.length.should >= 200
   end
+  
+  it 'should be able to handle data being appended in' do
+    doc = FastXml <<-END
+<testing/>
+END
+    doc.should_not be_nil
+    doc.to_s.should_not be_nil
+    doc.root.to_s.should == "<testing/>"
+  end
 
 end
