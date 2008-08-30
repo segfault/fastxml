@@ -7,7 +7,7 @@
 #
 # Please see the LICENSE file for copyright, licensing and distribution information
 module FastXml
-  VERSION = "0.1.94" 
+  VERSION = "0.1.95" 
   module Include #:nodoc:
   end
 end
