@@ -58,8 +58,8 @@ void Init_fastxml()
 	Init_fastxml_attrlist();  /* AttrList */
 	
 	/* pull in the ruby side of things */
-	rb_require( "lib/fastxml_lib" );      // ruby-side methods for the FastXml classes
-	rb_require( "lib/fastxml_helpers" );  // FastXml and FastHtml methods
+	rb_require( "fastxml/fastxml_lib" );      // ruby-side methods for the FastXml classes
+	rb_require( "fastxml/fastxml_helpers" );  // FastXml and FastHtml methods
 }
 
 

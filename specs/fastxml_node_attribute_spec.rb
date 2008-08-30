@@ -1,6 +1,5 @@
-$: << '../ext'
-$: << './ext'
 # encoding: utf-8 # :nodoc:
+%w[ ../ext ./ext ../lib ./lib ].each { |lp| $: << lp }
 require 'fastxml'
 
 describe FastXml::AttrList, ' functionality' do

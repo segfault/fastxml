@@ -216,6 +216,36 @@ VALUE fastxml_doc_root(VALUE self)
     return fastxml_raw_node_to_obj( root );
 }
 
+/* Returns the FastXml::Node object representing the root element of
+ * the target document
+ *
+ * call-seq:
+ *   puts doc.root.name
+ */
+VALUE fastxml_doc_root_set(VALUE self, VALUE newroot)
+{
+    VALUE dv, odv;
+    fxml_data_t *data, *node_data;
+    xmlNodePtr root, new_root;
+
+    dv = rb_iv_get( self, "@lxml_doc" );
+    Data_Get_Struct( dv, fxml_data_t, data );
+
+	odv = rb_iv_get( self, "@lxml_doc" );
+	Data_Get_Struct( odv, fxml_data_t, node_data );
+
+    root = xmlDocGetRootElement( data->doc );
+	
+	if (rb_obj_is_kind_of(newroot, rb_cFastXmlNode) == Qfalse && rb_obj_is_kind_of(newroot, rb_cString) == Qfalse)
+	  rb_raise(rb_eTypeError, "must pass a FastXml::Node or String type object");
+
+	new_root = xmlDocSetRootElement( data->doc, node_data->node );
+	if (new_root == NULL)
+	  return Qnil;
+	
+	return newroot;
+}
+
 /* Parse an input string/array/stringio object into a FastXml::Doc object.
  * 
  * call-seq:

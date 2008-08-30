@@ -1,6 +1,5 @@
 # encoding: utf-8
-$: << '../ext'
-$: << './ext'
+%w[ ../ext ./ext ../lib ./lib ].each { |lp| $: << lp }
 
 require 'fastxml'
 
