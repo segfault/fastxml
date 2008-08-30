@@ -12,7 +12,7 @@ require 'rubyforge'
 
 $: << './lib'
 $: << './ext'
-require 'fastxml_lib'
+require 'fastxml/fastxml_lib'
 full_name = "FastXml"
 short_name = full_name.downcase
 
